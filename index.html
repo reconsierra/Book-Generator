@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Idea Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1a1008;--paper:#f5ede0;--cream:#ede0cc;--accent:#b5451b;--gold:#c9943a;--muted:#7a6a58;--light:#faf4ec;--border:#c8b89a;--sa:#3a6bb5;--sl:#eef3fc;--green:#2a7a4a;--greenl:#edf7f1;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'DM Mono',monospace;min-height:100vh;background-image:radial-gradient(ellipse at 20% 0%,rgba(181,69,27,.07) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(201,148,58,.07) 0%,transparent 60%);}
+header{text-align:center;padding:2.5rem 2rem 1.5rem;position:relative;}
+header::after{content:'';display:block;width:80px;height:3px;background:linear-gradient(90deg,var(--accent),var(--gold));margin:1.2rem auto 0;border-radius:2px;}
+.eyebrow{font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem;}
+h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.05;color:var(--ink);}
+h1 em{font-style:italic;color:var(--accent);}
+.subtitle{margin-top:.7rem;font-size:.75rem;color:var(--muted);letter-spacing:.04em;}
+
+/* ── TOP TOOLBAR ── */
+.toolbar{max-width:980px;margin:0 auto;padding:.75rem 2rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--border);}
+.tb-btn{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.38rem .9rem;border:1.5px solid var(--border);background:var(--light);color:var(--muted);cursor:pointer;border-radius:2px;transition:all .15s;white-space:nowrap;}
+.tb-btn:hover{border-color:var(--accent);color:var(--accent);}
+.tb-btn.green{border-color:var(--green);color:var(--green);}
+.tb-btn.green:hover{background:var(--green);color:#fff;}
+.tb-btn.gold{border-color:var(--gold);color:var(--gold);}
+.tb-btn.gold:hover{background:var(--gold);color:#fff;}
+.tb-sep{flex:1;}
+
+/* ── GENRE TABS ── */
+.genre-tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;padding:1.2rem 2rem;max-width:980px;margin:0 auto;}
+.genre-tab{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.45rem 1rem;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:2px;transition:all .18s;}
+.genre-tab:hover{border-color:var(--accent);color:var(--accent);}
+.genre-tab.active{background:var(--accent);border-color:var(--accent);color:var(--light);font-weight:500;}
+
+/* ── FORM ── */
+.form-wrap{max-width:980px;margin:0 auto;padding:0 2rem 2rem;}
+.section-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:.9rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
+.fields-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.1rem;margin-bottom:1.8rem;}
+.field-group{display:flex;flex-direction:column;gap:.35rem;}
+label{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+select,input[type=text],input[type=range]{width:100%;font-family:'DM Mono',monospace;font-size:.76rem;}
+select{appearance:none;-webkit-appearance:none;background:var(--light);border:1.5px solid var(--border);color:var(--ink);padding:.5rem 2rem .5rem .7rem;border-radius:2px;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a6a58' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;transition:border-color .15s;}
+select:focus{outline:none;border-color:var(--accent);}
+input[type=text]{background:var(--light);border:1.5px solid var(--border);padding:.5rem .7rem;border-radius:2px;color:var(--ink);}
+input[type=text]:focus{outline:none;border-color:var(--accent);}
+.range-wrap{display:flex;flex-direction:column;gap:.25rem;}
+.range-row{display:flex;align-items:center;gap:.6rem;}
+input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:var(--border);border-radius:2px;flex:1;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--light);box-shadow:0 1px 4px rgba(0,0,0,.18);}
+.range-val{font-size:.68rem;color:var(--accent);min-width:2rem;text-align:right;}
+.range-labels{display:flex;justify-content:space-between;font-size:.56rem;color:var(--muted);}
+
+/* ── WORD COUNT ── */
+.wc-selector{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.8rem;}
+.wc-card{flex:1;min-width:140px;border:1.5px solid var(--border);border-radius:3px;padding:.9rem 1rem;cursor:pointer;background:var(--light);transition:all .18s;position:relative;}
+.wc-card:hover{border-color:var(--gold);}
+.wc-card.active{border-color:var(--accent);background:#fdf5ed;box-shadow:0 2px 10px rgba(181,69,27,.1);}
+.wc-card.active::after{content:'✓';position:absolute;top:.5rem;right:.7rem;font-size:.65rem;color:var(--accent);}
+.wc-title{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:.15rem;}
+.wc-range{font-size:.58rem;color:var(--accent);letter-spacing:.06em;margin-bottom:.3rem;}
+.wc-desc{font-size:.58rem;color:var(--muted);line-height:1.5;}
+
+/* ── TABOO ── */
+.taboo-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.4rem;}
+.taboo-actions{display:flex;gap:.35rem;flex-wrap:wrap;}
+.taboo-btn{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:.22rem .6rem;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:2px;transition:all .15s;}
+.taboo-btn:hover{border-color:var(--accent);color:var(--accent);}
+.taboo-btn.save-def{border-color:var(--gold);color:var(--gold);}
+.taboo-btn.save-def:hover{background:var(--gold);color:#fff;}
+.check-grid{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.8rem;}
+.check-pill{display:inline-flex;align-items:center;gap:.35rem;font-size:.65rem;letter-spacing:.05em;color:var(--muted);padding:.32rem .8rem;border:1.5px solid var(--border);border-radius:999px;cursor:pointer;transition:all .15s;user-select:none;background:var(--light);}
+.check-pill:hover{border-color:var(--gold);color:var(--ink);}
+.check-pill.on{background:var(--ink);border-color:var(--ink);color:var(--light);}
+.check-pill.is-def{box-shadow:0 0 0 2px var(--gold);}
+
+/* ── AUTHOR PRESET PANEL ── */
+.author-panel{background:var(--greenl);border:1.5px solid #8ecbaa;border-left:4px solid var(--green);border-radius:3px;padding:1.2rem 1.6rem;margin-bottom:1.5rem;}
+.panel-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.panel-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--green);display:flex;align-items:center;gap:.5rem;}
+.panel-hint{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#5aaa7a;}
+.panel-body{display:none;margin-top:1rem;}
+.panel-body.open{display:block;}
+.author-fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.9rem;margin-bottom:.8rem;}
+.green-input{font-family:'DM Mono',monospace;font-size:.76rem;width:100%;padding:.46rem .7rem;border:1.5px solid #8ecbaa;border-radius:2px;background:#fff;color:var(--ink);}
+.green-input:focus{outline:none;border-color:var(--green);}
+.green-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--green);display:block;margin-bottom:.3rem;}
+
+/* ── SERIES PANEL ── */
+.series-panel{background:var(--sl);border:1.5px solid #a8c0e8;border-left:4px solid var(--sa);border-radius:3px;padding:1.2rem 1.6rem;margin-bottom:1.5rem;}
+.series-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sa);display:block;margin-bottom:.3rem;}
+.series-input{font-family:'DM Mono',monospace;font-size:.76rem;width:100%;padding:.46rem .7rem;border:1.5px solid #a8c0e8;border-radius:2px;background:#fff;color:var(--ink);}
+.series-input:focus{outline:none;border-color:var(--sa);}
+.series-fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.9rem;margin-bottom:1rem;}
+.toggle-switch{position:relative;width:42px;height:22px;flex-shrink:0;}
+.toggle-switch input{display:none;}
+.toggle-track{position:absolute;inset:0;background:var(--border);border-radius:999px;cursor:pointer;transition:background .2s;}
+.toggle-switch input:checked+.toggle-track{background:var(--sa);}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:left .2s;pointer-events:none;}
+.toggle-switch input:checked~.toggle-thumb{left:23px;}
+.toggle-row{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;}
+.toggle-label{font-size:.73rem;color:var(--sa);}
+.series-config{display:none;}
+.series-config.open{display:block;}
+.char-list{display:flex;flex-direction:column;gap:.65rem;}
+.char-card{background:#fff;border:1.5px solid #a8c0e8;border-radius:3px;padding:.8rem .9rem;animation:fadeUp .2s ease;}
+.char-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;align-items:end;margin-bottom:.5rem;}
+.char-arc-row{display:grid;grid-template-columns:1fr;gap:.5rem;}
+.btn-rem{font-size:.75rem;width:26px;height:26px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:2px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.btn-rem:hover{border-color:var(--accent);color:var(--accent);}
+.btn-add-char{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.28rem .75rem;border:1.5px solid var(--sa);background:transparent;color:var(--sa);cursor:pointer;border-radius:2px;transition:all .15s;}
+.btn-add-char:hover{background:var(--sa);color:#fff;}
+.book-count-row{display:flex;align-items:center;gap:1rem;margin-top:1rem;padding-top:.9rem;border-top:1px dashed #a8c0e8;}
+.btn-cnt{font-size:.9rem;width:30px;height:30px;border:1.5px solid #a8c0e8;background:#fff;color:var(--sa);cursor:pointer;border-radius:2px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.btn-cnt:hover{background:var(--sa);color:#fff;}
+.cnt-display{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--sa);min-width:2.2rem;text-align:center;}
+
+/* ── PRESETS PANEL ── */
+.presets-panel{background:#f8f5ff;border:1.5px solid #c4b0e8;border-left:4px solid #7a4bb5;border-radius:3px;padding:1.2rem 1.6rem;margin-bottom:1.5rem;}
+.preset-grid{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem;}
+.preset-chip{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.06em;padding:.32rem .8rem;border:1.5px solid #c4b0e8;border-radius:999px;cursor:pointer;background:#fff;color:#7a4bb5;transition:all .15s;display:flex;align-items:center;gap:.4rem;}
+.preset-chip:hover{background:#7a4bb5;color:#fff;border-color:#7a4bb5;}
+.preset-chip .del-chip{margin-left:.2rem;opacity:.5;font-size:.75rem;}
+.preset-chip .del-chip:hover{opacity:1;}
+.preset-name-input{font-family:'DM Mono',monospace;font-size:.73rem;padding:.4rem .7rem;border:1.5px solid #c4b0e8;border-radius:2px;background:#fff;color:var(--ink);}
+.preset-name-input:focus{outline:none;border-color:#7a4bb5;}
+
+/* ── ACTION BUTTONS ── */
+.action-row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-top:1.8rem;}
+.btn-generate{font-family:'Playfair Display',serif;font-size:1rem;font-style:italic;font-weight:700;color:var(--light);background:var(--accent);border:none;border-radius:3px;cursor:pointer;padding:.9rem 2rem;transition:background .18s,transform .12s;box-shadow:0 4px 16px rgba(181,69,27,.25);}
+.btn-generate:hover{background:#9e3a15;transform:translateY(-1px);}
+.btn-generate:active{transform:translateY(0);}
+.btn-random{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.5rem 1.1rem;border:1.5px solid var(--gold);background:transparent;color:var(--gold);cursor:pointer;border-radius:2px;transition:all .15s;}
+.btn-random:hover{background:var(--gold);color:#fff;}
+
+/* ── OUTPUT ── */
+#output{max-width:980px;margin:0 auto 4rem;padding:0 2rem;display:none;}
+.output-card{background:var(--light);border:1.5px solid var(--border);border-left:4px solid var(--accent);border-radius:3px;padding:2rem 2.2rem;position:relative;box-shadow:0 6px 28px rgba(0,0,0,.07);margin-bottom:1.4rem;}
+.output-card::before{content:'✦';position:absolute;top:-.6rem;left:1.8rem;font-size:1rem;color:var(--accent);background:var(--light);padding:0 .3rem;}
+.output-card.s-card{border-left-color:var(--sa);}
+.output-card.s-card::before{color:var(--sa);}
+.out-badges{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem;}
+.out-badge{display:inline-block;font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;padding:.18rem .55rem;border-radius:1px;border:1px solid;}
+.out-badge.genre{color:var(--accent);border-color:var(--accent);}
+.out-badge.booknum{color:var(--sa);border-color:var(--sa);}
+.out-badge.author{color:var(--green);border-color:var(--green);}
+.out-title{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;line-height:1.2;margin-bottom:1rem;color:var(--ink);}
+.out-blurb{font-size:.8rem;line-height:1.85;color:var(--muted);margin-bottom:1.2rem;border-top:1px dashed var(--border);padding-top:.9rem;white-space:pre-wrap;}
+.out-chars{font-size:.73rem;line-height:1.7;color:var(--sa);background:var(--sl);border:1px solid #a8c0e8;border-radius:2px;padding:.7rem .9rem;margin-bottom:.9rem;}
+.out-chars strong{display:block;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.25rem;}
+.out-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1.2rem;}
+.tag{font-size:.6rem;letter-spacing:.06em;color:var(--muted);background:var(--cream);padding:.18rem .55rem;border-radius:1px;border:1px solid var(--border);}
+.out-actions{display:flex;gap:.5rem;flex-wrap:wrap;}
+.btn-act{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);background:transparent;padding:.35rem .85rem;cursor:pointer;border-radius:2px;transition:all .15s;}
+.btn-act:hover{color:var(--accent);border-color:var(--accent);}
+.btn-act.pdf-btn:hover{color:var(--green);border-color:var(--green);}
+.series-out-header{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--sa);margin-bottom:.8rem;padding-bottom:.45rem;border-bottom:2px solid #a8c0e8;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
+
+/* ── AI LOADING ── */
+.ai-loading{text-align:center;padding:2rem;font-size:.75rem;color:var(--muted);letter-spacing:.06em;}
+.ai-loading .spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:.8rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ai-error{background:#fff0ee;border:1px solid #e8b0a8;border-radius:3px;padding:1rem 1.2rem;font-size:.75rem;color:#a03020;margin-top:.8rem;}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.hidden{display:none;}
+.modal{background:var(--light);border-radius:4px;padding:2rem;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative;}
+.modal h2{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:1rem;}
+.modal-close{position:absolute;top:.9rem;right:1rem;font-size:1.1rem;cursor:pointer;color:var(--muted);background:none;border:none;}
+.modal input,.modal select{margin-bottom:.8rem;}
+.modal-actions{display:flex;gap:.5rem;justify-content:flex-end;margin-top:.5rem;}
+.btn-modal-save{font-family:'Playfair Display',serif;font-style:italic;font-size:.95rem;padding:.5rem 1.4rem;background:var(--accent);color:#fff;border:none;border-radius:2px;cursor:pointer;}
+.btn-modal-cancel{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;padding:.5rem 1rem;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;border-radius:2px;}
+
+/* ── API KEY NOTE ── */
+.api-note{background:#fff8e8;border:1px solid #e8d090;border-radius:3px;padding:.7rem 1rem;font-size:.68rem;color:#806020;line-height:1.6;margin-bottom:1rem;}
+.api-note a{color:#b5451b;}
+
+@media(max-width:600px){.fields-grid{grid-template-columns:1fr;}.output-card{padding:1.4rem;}.char-row{grid-template-columns:1fr 1fr;}.wc-card{min-width:100%;}}
+.fade-in{animation:fadeUp .35s ease forwards;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── DEVELOP THIS BOOK ── */
+.develop-panel{max-width:980px;margin:0 auto 3rem;padding:0 2rem;}
+.develop-card{background:linear-gradient(135deg,#1a1008 0%,#2d1f0e 100%);border-radius:4px;padding:2rem 2.4rem;box-shadow:0 8px 40px rgba(0,0,0,.2);}
+.develop-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.6rem;flex-wrap:wrap;gap:.8rem;}
+.develop-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#f5ede0;display:flex;align-items:center;gap:.6rem;}
+.develop-subtitle{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#c9943a;margin-top:.2rem;}
+.develop-book-label{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#7a9acc;background:rgba(58,107,181,.15);border:1px solid rgba(58,107,181,.3);padding:.25rem .7rem;border-radius:999px;}
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.9rem;margin-bottom:1.5rem;}
+.doc-btn{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;padding:.85rem 1rem;border:1.5px solid rgba(200,184,154,.25);background:rgba(250,244,236,.05);color:#c8b89a;cursor:pointer;border-radius:3px;transition:all .18s;text-align:left;position:relative;overflow:hidden;}
+.doc-btn:hover{border-color:var(--gold);background:rgba(201,148,58,.12);color:#f5ede0;transform:translateY(-1px);}
+.doc-btn:active{transform:translateY(0);}
+.doc-btn.running{border-color:#7a9acc;color:#7a9acc;cursor:wait;}
+.doc-btn.done{border-color:#5aaa7a;color:#5aaa7a;}
+.doc-btn .doc-icon{display:block;font-size:1.1rem;margin-bottom:.4rem;}
+.doc-btn .doc-label{display:block;font-weight:500;margin-bottom:.15rem;}
+.doc-btn .doc-desc{display:block;font-size:.55rem;letter-spacing:.04em;opacity:.65;line-height:1.4;text-transform:none;}
+.doc-output-area{margin-top:1.2rem;}
+.doc-result{background:rgba(250,244,236,.06);border:1.5px solid rgba(200,184,154,.2);border-radius:3px;padding:1.4rem 1.6rem;margin-bottom:1rem;animation:fadeUp .3s ease;}
+.doc-result-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem;}
+.doc-result-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#f5ede0;display:flex;align-items:center;gap:.5rem;}
+.doc-result-actions{display:flex;gap:.4rem;}
+.doc-act-btn{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.28rem .7rem;border:1px solid rgba(200,184,154,.3);background:transparent;color:#c8b89a;cursor:pointer;border-radius:2px;transition:all .15s;}
+.doc-act-btn:hover{border-color:var(--gold);color:var(--gold);}
+.doc-act-btn.pdf-act:hover{border-color:#5aaa7a;color:#5aaa7a;}
+.doc-content{font-size:.79rem;line-height:1.85;color:#c8b89a;white-space:pre-wrap;}
+.doc-content h3{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#f5ede0;margin:1.1rem 0 .4rem;}
+.doc-content h4{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin:.9rem 0 .3rem;}
+.doc-content strong{color:#f5ede0;}
+.doc-content em{color:var(--gold);font-style:normal;}
+.doc-loading{text-align:center;padding:1.5rem;color:#7a6a58;font-size:.72rem;letter-spacing:.06em;}
+.doc-loading .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(200,184,154,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin-right:.5rem;vertical-align:middle;}
+.develop-gen-all{font-family:'Playfair Display',serif;font-size:.9rem;font-style:italic;font-weight:700;padding:.6rem 1.4rem;border:1.5px solid var(--gold);background:rgba(201,148,58,.15);color:var(--gold);cursor:pointer;border-radius:3px;transition:all .18s;white-space:nowrap;}
+.develop-gen-all:hover{background:var(--gold);color:#1a1008;}
+.develop-gen-all:disabled{opacity:.45;cursor:wait;}
+.develop-gen-all.running{border-color:#7a9acc;color:#7a9acc;background:rgba(58,107,181,.1);}
+.develop-copy-all{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.42rem 1rem;border:1px solid rgba(200,184,154,.25);background:transparent;color:#c8b89a;cursor:pointer;border-radius:2px;transition:all .15s;}
+.develop-copy-all:hover{border-color:var(--gold);color:var(--gold);}
+.develop-export-pdf{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.42rem 1rem;border:1px solid rgba(90,170,122,.35);background:transparent;color:#5aaa7a;cursor:pointer;border-radius:2px;transition:all .15s;}
+.develop-export-pdf:hover{background:rgba(90,170,122,.12);}
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">✦ Story Architect ✦</p>
+  <h1>Book <em>Idea</em> Generator</h1>
+  <p class="subtitle">Select your variables — forge your premise — generate with AI</p>
+</header>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <button class="tb-btn green" onclick="savePreset()">💾 Save Preset</button>
+  <button class="tb-btn" onclick="exportJSON()">↗ Export JSON</button>
+  <button class="tb-btn" onclick="document.getElementById('importFile').click()">↙ Import JSON</button>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+  <button class="tb-btn" onclick="resetAll()" style="border-color:#b5451b;color:#b5451b;" title="Clear output and start a new book">↺ New Book</button>
+  <div class="tb-sep"></div>
+  <span id="apiStatus" style="font-size:.6rem;letter-spacing:.08em;padding:.3rem .7rem;border-radius:2px;display:none;"></span>
+  <button class="tb-btn gold" onclick="openApiModal()">🔑 Set API Key</button>
+</div>
+
+<!-- Genre Tabs -->
+<div class="genre-tabs" id="genreTabs"></div>
+
+<div class="form-wrap">
+
+  <!-- API key note -->
+  <div class="api-note" id="apiNote">
+    <b>AI Pitch Generation:</b> Set your Anthropic API key (button top-right) to enable full AI-written back-cover blurbs. Without a key, a structured template pitch is generated instead. Your key is stored only in your browser.
+  </div>
+
+  <!-- Author Settings -->
+  <div class="author-panel">
+    <div class="panel-header" onclick="togglePanel('authorBody','authorHint')">
+      <div class="panel-title">✍️ Author Settings</div>
+      <span class="panel-hint" id="authorHint">▼ expand</span>
+    </div>
+    <div class="panel-body" id="authorBody">
+      <div class="author-fields">
+        <div class="field-group">
+          <span class="green-label">Pen Name / Author Name</span>
+          <input class="green-input" type="text" id="penName" placeholder="e.g. Victoria Ashwood">
+        </div>
+        <div class="field-group">
+          <span class="green-label">Publisher / Imprint</span>
+          <input class="green-input" type="text" id="publisher" placeholder="e.g. Midnight Ink Press">
+        </div>
+        <div class="field-group">
+          <span class="green-label">Target Market / Country</span>
+          <input class="green-input" type="text" id="market" placeholder="e.g. Australian, US trade">
+        </div>
+        <div class="field-group">
+          <span class="green-label">Writing Style Notes</span>
+          <input class="green-input" type="text" id="styleNotes" placeholder="e.g. Lush prose, unreliable narrators">
+        </div>
+        <div class="field-group">
+          <span class="green-label">Comparable Titles (Comps)</span>
+          <input class="green-input" type="text" id="comps" placeholder="e.g. Tana French meets Kate Atkinson">
+        </div>
+        <div class="field-group">
+          <span class="green-label">Additional Notes for AI</span>
+          <input class="green-input" type="text" id="extraNotes" placeholder="e.g. Always include a dog as a side character">
+        </div>
+      </div>
+      <p style="font-size:.62rem;color:#5aaa7a;">These details appear on every generated brief and are included in AI pitch prompts.</p>
+    </div>
+  </div>
+
+  <!-- Presets -->
+  <div class="presets-panel" id="presetsPanel">
+    <div class="panel-header" onclick="togglePanel('presetsBody','presetsHint')">
+      <div class="panel-title" style="color:#7a4bb5;">📌 Saved Presets</div>
+      <span class="panel-hint" style="color:#a080d0;" id="presetsHint">▼ expand</span>
+    </div>
+    <div class="panel-body" id="presetsBody">
+      <p style="font-size:.62rem;color:#9070c0;margin-bottom:.5rem;">Click a preset to load it. Presets save all field values, author settings, series config and taboo defaults.</p>
+      <div class="preset-grid" id="presetGrid"></div>
+      <p style="font-size:.6rem;color:#b090d0;margin-top:.6rem;font-style:italic;" id="noPresetsHint">No presets saved yet. Configure your settings and click "Save Preset" in the toolbar.</p>
+    </div>
+  </div>
+
+  <div id="commonFields"></div>
+  <div id="genreFields"></div>
+
+  <!-- Series Manager -->
+  <div class="series-panel">
+    <div class="panel-header" onclick="togglePanel('seriesBody','seriesHint')">
+      <div class="panel-title" style="color:var(--sa);">📚 Series Manager</div>
+      <span class="panel-hint" id="seriesHint">▼ expand</span>
+    </div>
+    <div class="panel-body" id="seriesBody">
+      <div class="toggle-row">
+        <label class="toggle-switch">
+          <input type="checkbox" id="seriesEnabled" onchange="toggleSeriesConfig()">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+        <span class="toggle-label">This book is part of a series</span>
+      </div>
+      <div class="series-config" id="seriesConfig">
+        <div class="series-fields">
+          <div class="field-group">
+            <span class="series-label">Series Name</span>
+            <input class="series-input" type="text" id="seriesName" placeholder="e.g. The Ashwood Chronicles">
+          </div>
+          <div class="field-group">
+            <span class="series-label">Series World / Setting</span>
+            <input class="series-input" type="text" id="seriesWorld" placeholder="e.g. Victorian London, 1888">
+          </div>
+          <div class="field-group">
+            <span class="series-label">Continuity Style</span>
+            <select class="series-input" id="seriesContinuity">
+              <option>Sequential (strong arc across all books)</option>
+              <option>Loosely Connected (shared world, fresh leads)</option>
+              <option>Anthology (same characters, standalone plots)</option>
+              <option>Parallel (same events, different POVs)</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <span class="series-label">Series-Wide Overarching Theme</span>
+            <input class="series-input" type="text" id="seriesTheme" placeholder="e.g. Each book a different type of betrayal">
+          </div>
+          <div class="field-group">
+            <span class="series-label">Previous Books Synopsis (for AI context)</span>
+            <input class="series-input" type="text" id="prevBooks" placeholder="e.g. Book 1: detective discovers...; Book 2: she flees to...">
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;">
+          <span class="series-label" style="margin:0;">Recurring Characters</span>
+          <button class="btn-add-char" onclick="addChar()">+ Add Character</button>
+        </div>
+        <div class="char-list" id="charList"></div>
+        <p style="font-size:.6rem;color:#7a9acc;margin-top:.45rem;font-style:italic;" id="charHint">Add recurring characters — they appear in every book brief and inform the AI pitch.</p>
+        <div class="book-count-row">
+          <div>
+            <div style="font-size:.6rem;color:#7a9acc;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem;">Books in Series</div>
+            <div style="display:flex;align-items:center;gap:.5rem;">
+              <button class="btn-cnt" onclick="changeBooks(-1)">−</button>
+              <div class="cnt-display" id="bookCnt">3</div>
+              <button class="btn-cnt" onclick="changeBooks(1)">+</button>
+            </div>
+          </div>
+          <div style="flex:1;font-size:.6rem;color:#7a9acc;line-height:1.6;padding-left:1rem;">Generates a brief for each book in sequence, with AI aware of previous books, recurring characters, and series arc.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="action-row">
+    <button class="btn-generate" onclick="generateIdea()">✦ Generate with AI</button>
+    <button class="btn-random" onclick="randomiseAll()">🎲 Randomise All</button>
+  </div>
+</div>
+
+<!-- Output -->
+<div id="output"><div id="outputInner"></div></div>
+
+<!-- Develop This Book Panel -->
+<div class="develop-panel" id="developPanel" style="display:none;">
+  <div class="develop-card">
+    <div class="develop-header">
+      <div>
+        <div class="develop-title">✍️ Develop This Book</div>
+        <div class="develop-subtitle">AI-powered document suite — built from your brief</div>
+      </div>
+      <div class="develop-book-label" id="developBookLabel">Ready</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.7rem;">
+      <button class="develop-gen-all" id="btnGenAll" onclick="generateAllDocs()">✦ Generate All Documents</button>
+      <span style="font-size:.6rem;color:#7a6a58;font-style:italic;" id="genAllStatus"></span>
+    </div>
+    <div id="genAllProgress" style="display:none;height:3px;background:rgba(200,184,154,.2);border-radius:2px;margin-bottom:1rem;overflow:hidden;">
+      <div id="genAllBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),#e8b84a);transition:width .4s ease;border-radius:2px;"></div>
+    </div>
+    <div class="doc-grid" id="docGrid">
+      <!-- Buttons injected by JS -->
+    </div>
+    <div class="doc-output-area" id="docOutputArea"></div>
+    <div style="display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap;" id="developFooter" style="display:none;">
+      <button class="develop-copy-all" onclick="copyAllDocs()">⎘ Copy All Documents</button>
+      <button class="develop-export-pdf" onclick="exportDocsPDF()">⬇ Export All as PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- API Key Modal -->
+<div class="modal-overlay hidden" id="apiModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeApiModal()">✕</button>
+    <h2>🔑 Anthropic API Key</h2>
+    <p style="font-size:.73rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;">
+      Enter your Anthropic API key to enable AI-written pitch generation. The key is stored only in your browser's localStorage and never sent anywhere except Anthropic's API.
+    </p>
+    <label style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.35rem;">API Key</label>
+    <input type="password" id="apiKeyInput" style="width:100%;font-family:'DM Mono',monospace;font-size:.78rem;padding:.5rem .7rem;border:1.5px solid var(--border);border-radius:2px;background:var(--light);margin-bottom:1rem;" placeholder="sk-ant-api03-...">
+    <p style="font-size:.62rem;color:var(--muted);margin-bottom:1rem;">Get a key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent);">console.anthropic.com</a>. Uses claude-sonnet-4-20250514.</p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeApiModal()">Cancel</button>
+      <button class="btn-modal-save" onclick="saveApiKey()">Save Key</button>
+    </div>
+  </div>
+</div>
+
+<!-- Save Preset Modal -->
+<div class="modal-overlay hidden" id="presetModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closePresetModal()">✕</button>
+    <h2>💾 Save Preset</h2>
+    <p style="font-size:.73rem;color:var(--muted);margin-bottom:.9rem;">Name this preset. It will save all current field values, author settings, series configuration, and taboo defaults.</p>
+    <label style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.35rem;">Preset Name</label>
+    <input type="text" class="preset-name-input" id="presetNameInput" style="width:100%;margin-bottom:1rem;" placeholder="e.g. Dark Thriller Template, Cozy Mystery Series...">
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closePresetModal()">Cancel</button>
+      <button class="btn-modal-save" onclick="confirmSavePreset()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════════════════
+
+const GENRES = [
+  {id:'espionage',  label:'Espionage',         icon:'🕵️'},
+  {id:'thriller',   label:'Thriller',           icon:'🔪'},
+  {id:'romcom',     label:'Rom-Com',            icon:'😂'},
+  {id:'romance',    label:'Romance',            icon:'🌹'},
+  {id:'romantasy',  label:'Romantasy',          icon:'✨'},
+  {id:'fantasy',    label:'Fantasy',            icon:'⚔️'},
+  {id:'scifi',      label:'Sci-Fi',             icon:'🚀'},
+  {id:'horror',     label:'Horror',             icon:'🦇'},
+  {id:'mystery',    label:'Mystery',            icon:'🔍'},
+  {id:'crime',      label:'Crime',              icon:'🚔'},
+  {id:'historical', label:'Historical Fiction', icon:'🏰'},
+  {id:'ya',         label:'Young Adult',        icon:'🌟'},
+  {id:'childrens',  label:"Children's",         icon:'📚'},
+];
+
+const WC_OPTIONS = [
+  {id:'short',   label:'Short Story', range:'1k–15k',   desc:'Focused, punchy, single-sitting. One conflict, minimal subplots.'},
+  {id:'novella', label:'Novella',     range:'20k–50k',  desc:'Tight cast, one strong arc. Great for genre experiments.'},
+  {id:'novel',   label:'Full Novel',  range:'70k–120k', desc:'Full development, subplots, world-building. The complete experience.'},
+  {id:'epic',    label:'Epic / Saga', range:'120k+',    desc:'Multi-POV, sprawling cast, complex lore. Doorstop territory.'},
+];
+
+const TABOO_OPTIONS = [
+  'Trauma & PTSD','Addiction','Mental Illness','Child in Danger',
+  'Abuse (Physical)','Abuse (Psychological)','Torture / Captivity',
+  'Suicide / Self-Harm','Morally Reprehensible Protagonist',
+  'Religious Extremism','Political Violence','War Crimes',
+  'Cult Dynamics','Body Horror','Grief / Terminal Illness',
+  'Racism / Discrimination','Sexual Violence (Non-Graphic)','Animal Harm',
+];
+
+const COMMON_FIELDS = [
+  {section:'Core Premise', fields:[
+    {id:'protagonist',label:'Protagonist Type',type:'select',options:['Reluctant Hero','Fallen Expert','Ordinary Person Thrust In','Anti-Hero','Unreliable Narrator','Morally Ambiguous Lead','Chosen One (Subverted)','Disgraced Professional','Child / Teen Lead','Elderly Protagonist','Non-human / AI Lead','Ensemble / No Single Lead']},
+    {id:'setting_type',label:'Setting Type',type:'select',options:['Contemporary Real World','Near Future','Far Future','Historical (Pre-1900)','Historical (1900–2000)','Alternate History','Secondary World (Entirely Fictional)','Parallel / Hidden World','Post-Apocalyptic','Space / Other Planets','Underwater / Underground','Virtual / Digital Reality']},
+    {id:'scale',label:'Story Scale',type:'select',options:['Intimate (One Location / Few Characters)','Small Community','City-Wide','National','Global','Cosmic / Multiversal']},
+    {id:'pov',label:'Point of View',type:'select',options:['1st Person — Single','1st Person — Multiple','3rd Person Limited','3rd Person Omniscient','2nd Person','Alternating Close 3rd']},
+  ]},
+  {section:'Tone & Style', fields:[
+    {id:'tone',label:'Overall Tone',type:'select',options:['Dark & Grim','Hopeful Despite Darkness','Witty & Satirical','Melancholic / Elegiac','Tense & Urgent','Whimsical & Playful','Philosophical / Contemplative','Pulpy & Propulsive','Literary & Lyrical','Humorous / Comic','Dreamlike / Surreal','Grounded & Realistic']},
+    {id:'pacing',label:'Pacing',type:'range',min:1,max:10,def:6,minL:'Slow Burn',maxL:'Breakneck'},
+    {id:'narrative_structure',label:'Narrative Structure',type:'select',options:['Linear Chronology','Non-Linear / Fragmented','Framing Story / Nested','In Medias Res','Epistolary (Letters / Documents / Logs)','Dual Timeline','Multiple Timelines','Reverse Chronology']},
+  ]},
+  {section:'Themes & Darkness', fields:[
+    {id:'central_theme',label:'Central Theme',type:'select',options:['Identity & Self-Discovery','Power & Corruption','Love & Sacrifice','Survival & Resilience','Justice vs. Revenge','Truth vs. Deception','Nature vs. Technology','Memory & the Past','Class & Inequality','Grief & Loss','Redemption','Moral Ambiguity','Freedom vs. Control','Found Family','Legacy & Inheritance']},
+    {id:'violence_level',label:'Violence Level',type:'range',min:0,max:10,def:4,minL:'None',maxL:'Extreme / Visceral'},
+    {id:'moral_complexity',label:'Moral Complexity',type:'range',min:1,max:10,def:6,minL:'Clear Good/Evil',maxL:'Fully Ambiguous'},
+    {id:'sexual_content',label:'Sexual Content',type:'select',options:['None','Implied / Fade to Black','Moderate / Tasteful','Explicit']},
+  ]},
+  {section:'Character Dynamics', fields:[
+    {id:'antagonist',label:'Antagonist Type',type:'select',options:["Human Villain (Believes They're Right)",'Human Villain (Pure Malice)','System / Institution','Nature / Environment','The Protagonist Themselves','Unclear — Ambiguous Threat','Competing Protagonist (No True Villain)','Supernatural / Cosmic Entity','Technology / AI','Society / Culture']},
+    {id:'relationship_core',label:'Central Relationship',type:'select',options:['Romantic Partners','Enemies to Lovers','Mentor & Student','Rivals','Parent & Child','Siblings','Old Friends Reunited','Strangers Forced Together','Investigator & Subject','Betrayer & Betrayed','Twins / Doppelgangers','Human & Non-Human Bond']},
+    {id:'ensemble_size',label:'Cast Size',type:'select',options:['Solo (Largely One Character)','Duo','Small Group (3–5)','Medium (6–12)','Large Ensemble']},
+  ]},
+  {section:'World & Craft', fields:[
+    {id:'worldbuilding',label:'Worldbuilding Depth',type:'range',min:1,max:10,def:5,minL:'Minimal',maxL:'Immersive / Encyclopaedic'},
+    {id:'target_audience',label:'Target Audience',type:'select',options:['Children (8–12)','Young Adult (13–17)','New Adult (18–25)','General Adult','Literary / Academic','Mature Adult (explicit themes)']},
+    {id:'series_feel',label:'Standalone vs Series Feel',type:'select',options:['Standalone','Duology','Trilogy','Ongoing Series','Interconnected Standalone Books']},
+  ]},
+];
+
+const GENRE_FIELDS = {
+  espionage:{section:'Espionage Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Cold War Espionage','Contemporary Intelligence','Cyber Espionage / Tech Thriller','Double Agent / Mole Hunt','Corporate Espionage','Covert Ops / Black Ops','Rogue Agent','Deep Cover / Sleeper','Political Assassination Plot','Counter-Terrorism']},
+    {id:'g_agency',label:'Organisation',type:'select',options:['CIA (US)','MI6 (British)','Mossad (Israeli)','FSB / SVR (Russian)','Fictional Agency','Private Intelligence Firm','Freelance / Rogue Operative','Multinational / NATO','Terrorist Cell POV','Unknown / Shadowy Entity']},
+    {id:'g_tradecraft',label:'Tradecraft Style',type:'select',options:['High-Tech Gadgets & Surveillance','Old-School Human Intelligence (HUMINT)','Psychological Manipulation','Deep Cover & Identity','Action-Forward (Jason Bourne Style)','Slow Burn Paranoia (le Carré Style)','Ensemble Team Operation','Solo Operative']},
+    {id:'g_loyalty',label:'Loyalty & Betrayal',type:'select',options:['Clear Patriotic Mission','Moral Ambiguity — Both Sides Flawed','Double Agent — True Allegiance Unknown','Defection Arc','Whistleblower / Conscience Crisis','Revenge Mission','Love Interest Compromises Mission','The Mission Was a Lie']},
+    {id:'g_tension',label:'Primary Tension',type:'range',min:1,max:10,def:8,minL:'Slow Burn Paranoia',maxL:'Non-Stop Action'},
+  ]},
+  thriller:{section:'Thriller Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Psychological Thriller','Legal Thriller','Political Conspiracy','Medical Thriller','Domestic Thriller','Techno-Thriller','Crime Thriller','Eco-Thriller','Financial Thriller','Survival Thriller']},
+    {id:'g_threat',label:'Central Threat',type:'select',options:['Serial Killer','Terrorism','Kidnapping','Assassination','Blackmail','Identity Theft','Corporate Cover-Up','Government Conspiracy','Pandemic / Bioweapon','Stalker','Natural Disaster','Wrongful Accusation']},
+    {id:'g_twist',label:'Twist Style',type:'select',options:['Protagonist Is the Killer','Villain Was the Hero All Along','It Was an Accident','Everyone Is Complicit','No Twist — Earned Reveal','Unreliable Memory','Twin / Double Identity','The Past Is Not What Was Told']},
+    {id:'g_isolation',label:'Isolation Level',type:'range',min:1,max:10,def:5,minL:'Urban / Connected',maxL:'Completely Cut Off'},
+  ]},
+  romcom:{section:'Romantic Comedy Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Classic Hollywood (Meet-Cute, Chaos, Resolution)','Workplace Rom-Com','Travel / Fish Out of Water','Mistaken Identity / Impersonation','Rival-to-Lovers Competition','Holiday / Seasonal Rom-Com','Fake Relationship Gone Real','Social Media / Modern Dating','Multicultural / Cross-Cultural','Later-in-Life / Second Act','Friend Group Crossover','Nerdy / Genre-Savvy (Self-Aware)']},
+    {id:'g_meetcute',label:'Meet-Cute Style',type:'select',options:['Literally Collide (Classic)','Mistaken for Someone Else','Enemies Before They Know Each Other','Online First, IRL Disaster Second','Childhood Sweethearts, Estranged','One Night Stand Then Coworkers','Wrong Number / Wrong Inbox','Both After the Same Thing','Hired / Contracted Arrangement','Shared Living Space (Accidental)','No Meet-Cute — Slow Realisation']},
+    {id:'g_comedy',label:'Comedy Style',type:'select',options:['Witty Banter & Quippy Dialogue','Slapstick & Physical Comedy','Cringe Humour / Awkward Situations','Satirical / Skewering an Industry','Warm & Heartfelt with Comedic Beats','Absurdist / Heightened Reality','Dark Comedy Undertones','Self-Aware / Fourth-Wall Adjacent']},
+    {id:'g_obstacle',label:'Central Obstacle',type:'select',options:["Misunderstanding That Won't Resolve",'Competing Ambitions / Careers','Family Disapproval','Old Flame Re-enters','One Is Leaving Town / Country','One Is Technically Unavailable','Class / Social World Gap','They Made a Bet That Complicates Everything','Deep-Seated Fear of Commitment','Past Trauma Resurfaces at Worst Moment']},
+    {id:'g_gesture',label:'Third-Act Grand Gesture',type:'select',options:['Airport / Station Chase','Public Declaration (Speech / Sign / Mic Drop)','Showing Up in the Rain','The Letter They Were Never Meant to Hear','Abandoning Something Huge for Them','Letting Them Go (Selfless Exit)','No Grand Gesture — Quiet Honest Conversation','Both Stubborn — Comedic Collision']},
+  ]},
+  romance:{section:'Romance Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Contemporary Romance','Historical Romance','Paranormal Romance','Romantic Suspense','Sports Romance','Dark Romance','Second Chance','Forbidden Love','Small Town Romance','Billionaire Romance','Military Romance','Workplace Romance']},
+    {id:'g_trope',label:'Core Trope',type:'select',options:['Enemies to Lovers','Fake Dating','Forced Proximity','Second Chance','Grumpy / Sunshine',"Best Friend's Partner",'Forbidden Love','Bodyguard / Protector','Marriage of Convenience','Childhood Sweethearts','Slow Burn','Age Gap','Brother\'s Best Friend','Reverse Harem']},
+    {id:'g_heat',label:'Heat Level',type:'range',min:0,max:5,def:2,minL:'Sweet / Clean',maxL:'Scorching / Explicit'},
+    {id:'g_hea',label:'Ending',type:'select',options:['HEA (Happily Ever After)','HFN (Happy For Now)','Bittersweet','Tragic / Open','Ambiguous']},
+  ]},
+  romantasy:{section:'Romantasy Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Court Intrigue & Fae Romance','Dark Fantasy Romance','Dragon Rider Romance','Enemies-to-Lovers Epic Fantasy','Slow Burn Magic Academy','Gods & Mortals','Chosen One Romance','Villain / Anti-Hero Romance','Portal Fantasy Romance','Arranged Marriage in a Fantasy Kingdom']},
+    {id:'g_magic',label:'Magic System',type:'select',options:['Hard Rules — Defined Costs & Limits','Soft — Mysterious & Unpredictable','Blood Magic','Elemental','Fae / Courtly Magic','Soul Bond / Mate Bond Magic','Forbidden / Stolen Power','Rare Gift (Few Users)','Magic Tied to Emotion or Love','Dark / Corrupting Magic']},
+    {id:'g_heat',label:'Heat Level',type:'range',min:0,max:5,def:3,minL:'Sweet / Slow Burn',maxL:'Scorching / Explicit'},
+    {id:'g_trope',label:'Core Romance Trope',type:'select',options:['Enemies to Lovers','Forced Proximity (Imprisoned / Questing Together)','Fake Alliance Gone Real','Fated Mates / Soul Bond','Forbidden (Different Factions / Species)','Grumpy Immortal / Sunshine Mortal','Slow Burn Across Multiple Books','Villain Redemption Arc Romance']},
+    {id:'g_politics',label:'Political Intrigue',type:'range',min:0,max:10,def:6,minL:'Pure Romance Focus',maxL:'Complex Court Politics'},
+  ]},
+  fantasy:{section:'Fantasy Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Epic / High Fantasy','Grimdark','Cozy Fantasy','Urban Fantasy','Dark Fantasy','Portal Fantasy','Mythological Retelling','Low Fantasy (Minimal Magic)','Progression / LitRPG','Flintlock / Gunpowder Fantasy','Fairy Tale Retelling','Sword & Sorcery']},
+    {id:'g_magic',label:'Magic System',type:'select',options:['Hard Rules — Defined Costs & Limits','Soft — Mysterious & Unpredictable','Blood Magic','Elemental','Word / Language Based','Technology-Mimicking','Bound to Emotion','Borrowed / Stolen Power','Rare Gift (Few Users)','Universal (Anyone Can Learn)','No Magic System']},
+    {id:'g_politics',label:'Political Intrigue',type:'range',min:0,max:10,def:5,minL:'None',maxL:'Game of Thrones Level'},
+    {id:'g_chosen',label:'Chosen One Trope',type:'select',options:['Classic Chosen One','Subverted — They\'re Wrong','Deconstructed','Multiple Chosen Ones','No Chosen One — Earned Heroism','The Villain Is the Chosen One']},
+  ]},
+  scifi:{section:'Sci-Fi Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Hard Sci-Fi (Science-Forward)','Space Opera','Cyberpunk','Solarpunk','Biopunk','Military Sci-Fi','Cli-Fi (Climate Fiction)','First Contact','Generation Ship','Time Travel','Dystopian','Post-Human / Transhuman','AI Uprising']},
+    {id:'g_tech',label:'Technology Level',type:'range',min:1,max:10,def:6,minL:'Near Future (+50yr)',maxL:'Post-Singularity'},
+    {id:'g_concept',label:'Central SF Concept',type:'select',options:['FTL / Warp Travel','AI Consciousness','Genetic Engineering','Virtual Reality / Simulation Theory','Alien First Contact','Time Travel','Multiverse / Parallel Universes','Mind Uploading / Immortality','Terraforming','Megastructures','Post-Scarcity Economy','Nanotechnology']},
+    {id:'g_optimism',label:'Outlook',type:'range',min:0,max:10,def:5,minL:'Deeply Dystopian',maxL:'Utopian'},
+  ]},
+  horror:{section:'Horror Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Supernatural Horror','Psychological Horror','Cosmic / Lovecraftian','Folk Horror','Body Horror','Gothic Horror','Slasher / Survival','Haunted House','Creature Feature','Quiet Horror (Dread Over Gore)','Occult / Cult','Paranormal Investigator','Social Horror']},
+    {id:'g_monster',label:'Monster / Threat',type:'select',options:['Unknown / Unknowable','Ghost / Spirit','Demon / Possession','Serial Killer (Human)','Cult','Ancient God','Werewolf','Vampire','Witch / Cursed Entity','Nature / Environment','The Mind Itself','Technology / Experiment Gone Wrong',"The Protagonist's Own Past"]},
+    {id:'g_gore',label:'Gore Level',type:'range',min:0,max:10,def:4,minL:'Bloodless Dread',maxL:'Extreme Gore'},
+    {id:'g_survival',label:'Survival Odds',type:'select',options:['Everyone Dies','Most Die — Pyrrhic Survival','Protagonist Survives (Scarred)','Bittersweet Escape','Full Resolution — Evil Defeated','Ambiguous']},
+  ]},
+  mystery:{section:'Mystery Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Cozy Mystery','Police Procedural','Hardboiled Detective','Amateur Sleuth','Legal Mystery','Historical Mystery','Forensic / Crime Thriller Hybrid','Whodunit (Classic)','Cold Case','True Crime Style','Heist / Caper']},
+    {id:'g_crime',label:'Central Crime',type:'select',options:['Murder (Single Victim)','Serial Murders','Disappearance','Theft / Heist','Fraud / Financial Crime','Art / Antiquities Crime','Political Assassination','Cold Case Reopened','Kidnapping','Wrongful Conviction','Identity Crime','Mass Casualty Event']},
+    {id:'g_detective',label:'Investigator',type:'select',options:['Police Detective (Mainstream)','Maverick / Rogue Cop','Private Investigator','Amateur (No Training)','Forensic Specialist','Journalist / Reporter','Lawyer','Criminal Turned Informant','Paranormal Investigator','Victim Investigating Own Case']},
+    {id:'g_herrings',label:'Red Herring Density',type:'range',min:1,max:10,def:5,minL:'Few — Lean Puzzle',maxL:'Dense — Many Suspects'},
+  ]},
+  crime:{section:'Crime Fiction Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Organised Crime / Mob','Heist / Caper','White Collar Crime','Drug Trade / Cartel','True Crime Style Fiction','Gang / Street Crime','Art / Antiquities Crime','Political Crime','Serial Offender Procedural','Vigilante Justice']},
+    {id:'g_pov_side',label:'Narrative Perspective',type:'select',options:['Detective / Law Enforcement POV','Criminal POV','Victim POV','Journalist / Outsider POV','Both Sides Alternating','Omniscient Observer']},
+    {id:'g_morality',label:'Justice Outcome',type:'select',options:['Criminal Caught — Justice Served','Criminal Escapes — Critique of System','Ambiguous — No Clear Resolution','Vigilante Justice Prevails','Systemic Corruption Exposed','Tragic — Everyone Loses']},
+    {id:'g_grit',label:'Grit Level',type:'range',min:1,max:10,def:6,minL:'Polished / Stylised',maxL:'Raw / Unflinching'},
+  ]},
+  historical:{section:'Historical Fiction Specifics',fields:[
+    {id:'g_era',label:'Historical Era',type:'select',options:['Ancient (Pre-500 AD)','Medieval (500–1400)','Renaissance / Early Modern (1400–1700)','Georgian / Regency (1700–1820)','Victorian (1820–1900)','Edwardian / WWI Era (1900–1920)','Interwar / WWII (1920–1945)','Post-War / Cold War (1945–1980)','Late 20th Century (1980–2000)']},
+    {id:'g_region',label:'Region / Culture',type:'select',options:['British Isles','Continental Europe','North America','Latin America','Middle East / Ottoman Empire','Sub-Saharan Africa','East Asia','South Asia','Pacific / Oceania','Ancient Mediterranean','Colonial / Empire Intersection']},
+    {id:'g_real',label:'Real Historical Figures',type:'select',options:['No real figures — purely fictional','Background/minor real figures only','Major real figures as supporting characters','Real figure as protagonist']},
+    {id:'g_accuracy',label:'Historical Accuracy',type:'range',min:1,max:10,def:7,minL:'Loose Inspiration',maxL:'Rigorous Research'},
+  ]},
+  ya:{section:'Young Adult Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['YA Contemporary','YA Fantasy','YA Dystopian / Sci-Fi','YA Romance','YA Thriller / Mystery','YA Historical Fiction','YA Horror','YA Paranormal','YA Sports','YA Issue-Driven (Own Voices)','YA Adventure / Quest']},
+    {id:'g_stakes',label:'Personal vs World Stakes',type:'range',min:1,max:10,def:6,minL:'Deeply Personal / Internal',maxL:'Save-the-World Epic'},
+    {id:'g_coming_of_age',label:'Coming-of-Age Focus',type:'select',options:['Identity & Self-Discovery','First Love / Heartbreak','Family Conflict & Independence','Grief & Loss','Mental Health Journey','Social Pressure & Belonging','Political Awakening','Finding Voice & Power','Leaving Home / Growing Up','Confronting Trauma']},
+    {id:'g_tone_ya',label:'Tone',type:'select',options:['Hopeful & Empowering','Dark & Unflinching','Funny & Relatable','Romantic & Swoony','Action-Packed & Propulsive','Emotional & Tearjerking','Thoughtful & Quiet','Magical & Wondrous']},
+  ]},
+  childrens:{section:"Children's Fiction Specifics",fields:[
+    {id:'g_age',label:'Age Range',type:'select',options:["Picture Book (0–5)",'Early Reader (5–7)','Chapter Book (6–9)','Middle Grade (8–12)','Upper Middle Grade / YA Bridge (10–14)']},
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:["Adventure / Quest",'School / Friendship Story','Fantasy / Magic','Animal Story','Mystery / Detective','Humour / Comedy','Family / Home','Science / Discovery','Fairy Tale / Fable','Horror (Age-Appropriate)','Sports Story']},
+    {id:'g_lesson',label:'Core Lesson / Theme',type:'select',options:['Friendship & Belonging','Courage & Facing Fears','Kindness & Empathy','Being Different Is OK','Family & Change','Honesty & Integrity','Loss & Grief (Age-Appropriate)','Environmental Awareness','Self-Belief / Growth Mindset','Curiosity & Learning']},
+    {id:'g_whimsy',label:'Whimsy Level',type:'range',min:1,max:10,def:7,minL:'Grounded / Realistic',maxL:'Wildly Magical'},
+  ]},
+};
+
+
+// ══════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════
+let activeGenre = 'espionage';
+let tabooState  = {};         // option -> bool
+let tabooDefaults = new Set(['Trauma & PTSD','Addiction','Mental Illness']);
+let selectedWC = 'novel';
+let seriesBookCount = 3;
+let chars = [], charId = 0;
+let presets = [];
+
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+function init() {
+  try {
+    const td = localStorage.getItem('bookgen_tabooDefaults');
+    if (td) tabooDefaults = new Set(JSON.parse(td));
+    const ps = localStorage.getItem('bookgen_presets');
+    if (ps) presets = JSON.parse(ps);
+    // Load API key - try localStorage first, then sessionStorage as fallback
+    const ak = localStorage.getItem('bookgen_apikey') || sessionStorage.getItem('bookgen_apikey');
+    if (ak) {
+      document.getElementById('apiKeyInput').value = ak;
+      updateApiStatus(ak);
+    }
+    // Load author settings
+    ['penName','publisher','market','styleNotes','comps','extraNotes'].forEach(id => {
+      const v = localStorage.getItem('bookgen_'+id);
+      if (v) document.getElementById(id).value = v;
+    });
+  } catch(e) {}
+
+  // Init taboo state from defaults
+  TABOO_OPTIONS.forEach(o => { tabooState[o] = tabooDefaults.has(o); });
+
+  renderGenreTabs();
+  renderCommonFields();
+  renderGenreFields();
+  renderPresets();
+
+  // Auto-save author fields
+  ['penName','publisher','market','styleNotes','comps','extraNotes'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      try { localStorage.setItem('bookgen_'+id, document.getElementById(id).value); } catch(e) {}
+    });
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+//  PANELS
+// ══════════════════════════════════════════════════════════
+function togglePanel(bodyId, hintId) {
+  const body = document.getElementById(bodyId);
+  const hint = document.getElementById(hintId);
+  const open = body.classList.toggle('open');
+  hint.textContent = open ? '▲ collapse' : '▼ expand';
+}
+
+// ══════════════════════════════════════════════════════════
+//  GENRE TABS
+// ══════════════════════════════════════════════════════════
+function renderGenreTabs() {
+  document.getElementById('genreTabs').innerHTML = GENRES.map(g =>
+    `<button class="genre-tab ${g.id===activeGenre?'active':''}" onclick="switchGenre('${g.id}')">
+      <span>${g.icon}</span> ${g.label}
+    </button>`).join('');
+}
+function switchGenre(id) {
+  activeGenre = id;
+  renderGenreTabs();
+  renderGenreFields();
+}
+
+// ══════════════════════════════════════════════════════════
+//  FIELD RENDERERS
+// ══════════════════════════════════════════════════════════
+function renderField(f) {
+  if (f.type === 'select') return `<div class="field-group">
+    <label for="${f.id}">${f.label}</label>
+    <select id="${f.id}">${f.options.map(o=>`<option>${o}</option>`).join('')}</select>
+  </div>`;
+
+  if (f.type === 'range') {
+    const def = f.def ?? Math.round((f.min+f.max)/2);
+    return `<div class="field-group">
+      <label>${f.label}</label>
+      <div class="range-wrap">
+        <div class="range-row">
+          <input type="range" id="${f.id}" min="${f.min}" max="${f.max}" value="${def}"
+            oninput="this.nextElementSibling.textContent=this.value">
+          <span class="range-val">${def}</span>
+        </div>
+        <div class="range-labels"><span>${f.minL}</span><span>${f.maxL}</span></div>
+      </div>
+    </div>`;
+  }
+  return '';
+}
+
+function renderSection(s) {
+  return `<p class="section-label">${s.section}</p>
+    <div class="fields-grid">${s.fields.map(renderField).join('')}</div>`;
+}
+
+function renderWCSelector() {
+  return `<p class="section-label">Word Count / Format</p>
+    <div class="wc-selector">${WC_OPTIONS.map(w=>`
+      <div class="wc-card ${selectedWC===w.id?'active':''}" onclick="selectWC('${w.id}')">
+        <div class="wc-title">${w.label}</div>
+        <div class="wc-range">${w.range} words</div>
+        <div class="wc-desc">${w.desc}</div>
+      </div>`).join('')}
+    </div>`;
+}
+
+function selectWC(id) {
+  selectedWC = id;
+  document.querySelectorAll('.wc-card').forEach(c => {
+    c.classList.toggle('active', c.onclick && c.getAttribute('onclick') === `selectWC('${id}')`);
+  });
+  // Re-render to reflect active state cleanly
+  const el = document.getElementById('wcSection');
+  if (el) el.innerHTML = renderWCSelector();
+}
+
+function renderTaboo() {
+  return `<p class="section-label">Taboo / Dark Elements</p>
+    <div class="taboo-header">
+      <span style="font-size:.6rem;color:var(--muted);">Click pill to toggle. ⭐ = saved default. Click ⭐ on a checked pill to toggle its default status.</span>
+      <div class="taboo-actions">
+        <button class="taboo-btn" onclick="tabooAll(false)">Clear All</button>
+        <button class="taboo-btn" onclick="tabooAll(true)">Select All</button>
+        <button class="taboo-btn" onclick="tabooReset()">Reset to Defaults</button>
+        <button class="taboo-btn save-def" onclick="tabooSaveDefaults()">⭐ Save Selection as Default</button>
+      </div>
+    </div>
+    <div class="check-grid" id="tabooGrid">
+      ${TABOO_OPTIONS.map(o => tabooChipHtml(o)).join('')}
+    </div>`;
+}
+
+function tabooChipHtml(o) {
+  const on  = !!tabooState[o];
+  const def = tabooDefaults.has(o);
+  const sid = 'tc_' + o.replace(/[^a-z0-9]/gi,'_');
+  return `<span class="check-pill ${on?'on':''} ${def?'is-def':''}" id="${sid}" onclick="tabooToggle(event,'${o.replace(/'/g,"\\'")}')">
+    ${def?'<span class="def-star" title="Click to remove from defaults" onclick="tabooToggleDef(event,\''+o.replace(/'/g,"\\'")+'\')" style="cursor:pointer;">⭐</span>':''}
+    ${o}
+  </span>`;
+}
+
+function tabooToggle(e, o) {
+  // Don't toggle if user clicked the star
+  if (e.target.classList.contains('def-star')) return;
+  tabooState[o] = !tabooState[o];
+  refreshTabooGrid();
+}
+
+function tabooToggleDef(e, o) {
+  e.stopPropagation();
+  if (tabooDefaults.has(o)) {
+    tabooDefaults.delete(o);
+  } else {
+    tabooDefaults.add(o);
+    tabooState[o] = true; // Ensure it's also checked when added to defaults
+  }
+  try { localStorage.setItem('bookgen_tabooDefaults', JSON.stringify([...tabooDefaults])); } catch(e_) {}
+  refreshTabooGrid();
+}
+
+function tabooAll(v) {
+  TABOO_OPTIONS.forEach(o => { tabooState[o] = v; });
+  refreshTabooGrid();
+}
+
+function tabooReset() {
+  TABOO_OPTIONS.forEach(o => { tabooState[o] = tabooDefaults.has(o); });
+  refreshTabooGrid();
+}
+
+function tabooSaveDefaults() {
+  tabooDefaults = new Set(TABOO_OPTIONS.filter(o => tabooState[o]));
+  try { localStorage.setItem('bookgen_tabooDefaults', JSON.stringify([...tabooDefaults])); } catch(e) {}
+  refreshTabooGrid();
+  showToast('✓ Defaults saved');
+}
+
+function refreshTabooGrid() {
+  const grid = document.getElementById('tabooGrid');
+  if (grid) grid.innerHTML = TABOO_OPTIONS.map(o => tabooChipHtml(o)).join('');
+}
+
+function getTabooActive() {
+  return TABOO_OPTIONS.filter(o => tabooState[o]);
+}
+
+function renderCommonFields() {
+  document.getElementById('commonFields').innerHTML =
+    COMMON_FIELDS.map(renderSection).join('') +
+    `<div id="wcSection">${renderWCSelector()}</div>` +
+    `<div id="tabooSection">${renderTaboo()}</div>`;
+}
+
+function renderGenreFields() {
+  document.getElementById('genreFields').innerHTML = renderSection(GENRE_FIELDS[activeGenre]);
+}
+
+// ══════════════════════════════════════════════════════════
+//  SERIES MANAGER
+// ══════════════════════════════════════════════════════════
+function toggleSeriesConfig() {
+  document.getElementById('seriesConfig').classList.toggle('open', document.getElementById('seriesEnabled').checked);
+}
+function changeBooks(d) {
+  seriesBookCount = Math.max(2, Math.min(12, seriesBookCount + d));
+  document.getElementById('bookCnt').textContent = seriesBookCount;
+}
+function addChar() {
+  chars.push({id:++charId, name:'', role:'', trait:'', arc:''});
+  renderCharList();
+}
+function removeChar(id) {
+  chars = chars.filter(c => c.id !== id);
+  renderCharList();
+}
+function updateChar(id, field, val) {
+  const c = chars.find(c => c.id === id);
+  if (c) c[field] = val;
+}
+function renderCharList() {
+  const list = document.getElementById('charList');
+  document.getElementById('charHint').style.display = chars.length ? 'none' : 'block';
+  list.innerHTML = chars.map(c => `
+    <div class="char-card">
+      <div class="char-row">
+        <div class="field-group"><span class="series-label">Name</span>
+          <input class="series-input" type="text" value="${c.name}" placeholder="Character name" oninput="updateChar(${c.id},'name',this.value)"></div>
+        <div class="field-group"><span class="series-label">Role</span>
+          <input class="series-input" type="text" value="${c.role}" placeholder="e.g. Protagonist" oninput="updateChar(${c.id},'role',this.value)"></div>
+        <div class="field-group"><span class="series-label">Key Trait</span>
+          <input class="series-input" type="text" value="${c.trait}" placeholder="e.g. Sarcastic, brave" oninput="updateChar(${c.id},'trait',this.value)"></div>
+        <button class="btn-rem" onclick="removeChar(${c.id})">✕</button>
+      </div>
+      <div class="char-arc-row">
+        <div class="field-group"><span class="series-label">Series-Wide Arc</span>
+          <input class="series-input" type="text" value="${c.arc}" placeholder="e.g. Learns to trust again across all 3 books" oninput="updateChar(${c.id},'arc',this.value)"></div>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  GET VALUES
+// ══════════════════════════════════════════════════════════
+function gv(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+
+function collectParams() {
+  const genre = GENRES.find(g => g.id === activeGenre);
+  const gf = GENRE_FIELDS[activeGenre];
+  const gVals = {};
+  gf.fields.forEach(f => { gVals[f.id] = gv(f.id); });
+
+  return {
+    genre,
+    protagonist: gv('protagonist'),
+    setting: gv('setting_type'),
+    scale: gv('scale'),
+    pov: gv('pov'),
+    tone: gv('tone'),
+    pacing: gv('pacing'),
+    structure: gv('narrative_structure'),
+    theme: gv('central_theme'),
+    violence: gv('violence_level'),
+    moralComplexity: gv('moral_complexity'),
+    sexual: gv('sexual_content'),
+    antagonist: gv('antagonist'),
+    relationship: gv('relationship_core'),
+    castSize: gv('ensemble_size'),
+    worldbuilding: gv('worldbuilding'),
+    audience: gv('target_audience'),
+    seriesFeel: gv('series_feel'),
+    dark: getTabooActive(),
+    wordCount: WC_OPTIONS.find(w => w.id === selectedWC),
+    gVals,
+    // Author settings
+    penName: gv('penName'),
+    publisher: gv('publisher'),
+    market: gv('market'),
+    styleNotes: gv('styleNotes'),
+    comps: gv('comps'),
+    extraNotes: gv('extraNotes'),
+  };
+}
+
+function collectSeriesData() {
+  if (!document.getElementById('seriesEnabled').checked) return null;
+  return {
+    name: gv('seriesName') || 'Untitled Series',
+    world: gv('seriesWorld'),
+    continuity: gv('seriesContinuity'),
+    overarchingTheme: gv('seriesTheme'),
+    prevBooks: gv('prevBooks'),
+    bookCount: seriesBookCount,
+    characters: chars.filter(c => c.name.trim()),
+  };
+}
+
+// ══════════════════════════════════════════════════════════
+//  RANDOMISE
+// ══════════════════════════════════════════════════════════
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function randomiseAll() {
+  // Common fields
+  COMMON_FIELDS.forEach(section => {
+    section.fields.forEach(f => {
+      const el = document.getElementById(f.id);
+      if (!el) return;
+      if (f.type === 'select') {
+        el.selectedIndex = Math.floor(Math.random() * el.options.length);
+      } else if (f.type === 'range') {
+        el.value = Math.floor(Math.random() * (f.max - f.min + 1)) + f.min;
+        el.nextElementSibling.textContent = el.value;
+      }
+    });
+  });
+  // Genre fields
+  const gf = GENRE_FIELDS[activeGenre];
+  gf.fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (!el) return;
+    if (f.type === 'select') el.selectedIndex = Math.floor(Math.random() * el.options.length);
+    else if (f.type === 'range') {
+      el.value = Math.floor(Math.random() * (f.max - f.min + 1)) + f.min;
+      el.nextElementSibling.textContent = el.value;
+    }
+  });
+  // Random genre
+  const rg = GENRES[Math.floor(Math.random() * GENRES.length)];
+  activeGenre = rg.id;
+  renderGenreTabs();
+  renderGenreFields();
+  // Random word count
+  selectedWC = WC_OPTIONS[Math.floor(Math.random() * WC_OPTIONS.length)].id;
+  document.getElementById('wcSection').innerHTML = renderWCSelector();
+  // Random taboo (3-8 random elements)
+  const n = 3 + Math.floor(Math.random() * 6);
+  const shuffled = [...TABOO_OPTIONS].sort(() => Math.random() - .5);
+  TABOO_OPTIONS.forEach(o => { tabooState[o] = false; });
+  shuffled.slice(0, n).forEach(o => { tabooState[o] = true; });
+  refreshTabooGrid();
+  // Clear previous output so the new book starts fresh
+  clearOutput();
+  showToast('🎲 All fields randomised — ready for new book');
+}
+
+// ══════════════════════════════════════════════════════════
+//  RESET / CLEAR
+// ══════════════════════════════════════════════════════════
+function clearOutput() {
+  document.getElementById('output').style.display = 'none';
+  document.getElementById('outputInner').innerHTML = '';
+  document.getElementById('developPanel').style.display = 'none';
+  document.getElementById('docOutputArea').innerHTML = '';
+  document.getElementById('docGrid').innerHTML = '';
+  document.getElementById('developFooter').style.display = 'none';
+  developContext = null;
+  developResults = {};
+}
+
+function resetAll() {
+  clearOutput();
+  // Scroll back to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast('↺ Ready for a new book');
+}
+
+// ══════════════════════════════════════════════════════════
+//  GENERATE
+// ══════════════════════════════════════════════════════════
+async function generateIdea() {
+  const params = collectParams();
+  const seriesData = collectSeriesData();
+
+  document.getElementById('output').style.display = 'block';
+  document.getElementById('outputInner').innerHTML = `<div class="ai-loading">
+    <div class="spinner"></div><br>
+    ${seriesData ? `Generating ${seriesData.bookCount}-book series brief with AI...` : 'Generating AI pitch...'}
+  </div>`;
+  document.getElementById('output').scrollIntoView({behavior:'smooth',block:'start'});
+
+  const apiKey = getApiKey();
+
+  if (seriesData) {
+    const cards = [];
+    for (let i = 1; i <= seriesData.bookCount; i++) {
+      const blurb = await fetchAIBlurb(params, seriesData, i, seriesData.bookCount, apiKey);
+      cards.push(renderCard(params, seriesData, i, seriesData.bookCount, blurb));
+    }
+    const charSummary = seriesData.characters.length > 0
+      ? seriesData.characters.map(c => `${c.name}${c.role?' ('+c.role+')':''}`).join(', ')
+      : 'No named recurring characters';
+    document.getElementById('outputInner').innerHTML =
+      `<div class="series-out-header fade-in">
+        📚 ${seriesData.name}
+        <span style="font-size:.68rem;font-family:'DM Mono',monospace;font-style:normal;color:#7a9acc;font-weight:400;">
+          ${seriesData.bookCount} books · ${seriesData.continuity}
+        </span>
+      </div>
+      <p style="font-size:.7rem;color:var(--muted);margin-bottom:1.3rem;line-height:1.7;">
+        ${seriesData.world?`<b>World:</b> ${seriesData.world} &nbsp;·&nbsp;`:''}
+        <b>Cast:</b> ${charSummary}
+        ${seriesData.overarchingTheme?`&nbsp;·&nbsp;<b>Series theme:</b> ${seriesData.overarchingTheme}`:''}
+      </p>
+      ${cards.join('')}
+      <div style="margin-top:.5rem;display:flex;gap:.5rem;">
+        <button class="btn-act" onclick="copyAll()">⎘ Copy Full Series Brief</button>
+        <button class="btn-act pdf-btn" onclick="exportPDF()">⬇ Export PDF</button>
+      </div>`;
+  } else {
+    const blurb = await fetchAIBlurb(params, null, null, null, apiKey);
+    document.getElementById('outputInner').innerHTML = renderCard(params, null, null, null, blurb);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  AI BLURB
+// ══════════════════════════════════════════════════════════
+async function fetchAIBlurb(params, seriesData, bookNum, totalBooks, apiKey) {
+  if (!apiKey) return buildFallbackBlurb(params, seriesData, bookNum, totalBooks);
+
+  const prompt = buildAIPrompt(params, seriesData, bookNum, totalBooks);
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{role:'user', content: prompt}]
+      })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      return `[API Error ${res.status}: ${err.error?.message || res.statusText}]\n\n` + buildFallbackBlurb(params, seriesData, bookNum, totalBooks);
+    }
+    const data = await res.json();
+    return data.content?.map(b => b.text || '').join('') || buildFallbackBlurb(params, seriesData, bookNum, totalBooks);
+  } catch (e) {
+    return `[Network error: ${e.message}]\n\n` + buildFallbackBlurb(params, seriesData, bookNum, totalBooks);
+  }
+}
+
+function buildAIPrompt(p, seriesData, bookNum, totalBooks) {
+  const {genre, protagonist, setting, scale, tone, theme, violence, moralComplexity,
+    sexual, antagonist, relationship, structure, dark, wordCount, gVals,
+    penName, publisher, market, styleNotes, comps, extraNotes} = p;
+
+  let genreSpecific = '';
+  const g = genre.id;
+  if (g==='espionage') genreSpecific = `Sub-genre: ${gVals.g_sub}. Agency: ${gVals.g_agency}. Tradecraft: ${gVals.g_tradecraft}. Loyalty dynamic: ${gVals.g_loyalty}. Tension level: ${gVals.g_tension}/10.`;
+  else if (g==='thriller') genreSpecific = `Sub-genre: ${gVals.g_sub}. Threat: ${gVals.g_threat}. Twist: ${gVals.g_twist}.`;
+  else if (g==='romcom') genreSpecific = `Sub-genre: ${gVals.g_sub}. Meet-cute: ${gVals.g_meetcute}. Comedy style: ${gVals.g_comedy}. Obstacle: ${gVals.g_obstacle}. Grand gesture: ${gVals.g_gesture}.`;
+  else if (g==='romance') genreSpecific = `Sub-genre: ${gVals.g_sub}. Trope: ${gVals.g_trope}. Heat: ${gVals.g_heat}/5. Ending: ${gVals.g_hea}.`;
+  else if (g==='romantasy') genreSpecific = `Sub-genre: ${gVals.g_sub}. Magic: ${gVals.g_magic}. Heat: ${gVals.g_heat}/5. Romance trope: ${gVals.g_trope}. Political intrigue: ${gVals.g_politics}/10.`;
+  else if (g==='fantasy') genreSpecific = `Sub-genre: ${gVals.g_sub}. Magic system: ${gVals.g_magic}. Political intrigue: ${gVals.g_politics}/10. Chosen one: ${gVals.g_chosen}.`;
+  else if (g==='scifi') genreSpecific = `Sub-genre: ${gVals.g_sub}. Tech level: ${gVals.g_tech}/10. Concept: ${gVals.g_concept}. Optimism: ${gVals.g_optimism}/10.`;
+  else if (g==='horror') genreSpecific = `Sub-genre: ${gVals.g_sub}. Threat: ${gVals.g_monster}. Gore: ${gVals.g_gore}/10. Survival odds: ${gVals.g_survival}.`;
+  else if (g==='mystery') genreSpecific = `Sub-genre: ${gVals.g_sub}. Crime: ${gVals.g_crime}. Investigator: ${gVals.g_detective}. Red herrings: ${gVals.g_herrings}/10.`;
+  else if (g==='crime') genreSpecific = `Sub-genre: ${gVals.g_sub}. POV side: ${gVals.g_pov_side}. Justice outcome: ${gVals.g_morality}. Grit: ${gVals.g_grit}/10.`;
+  else if (g==='historical') genreSpecific = `Era: ${gVals.g_era}. Region: ${gVals.g_region}. Real figures: ${gVals.g_real}. Accuracy: ${gVals.g_accuracy}/10.`;
+  else if (g==='ya') genreSpecific = `Sub-genre: ${gVals.g_sub}. Coming-of-age focus: ${gVals.g_coming_of_age}. Stakes: ${gVals.g_stakes}/10. Tone: ${gVals.g_tone_ya}.`;
+  else if (g==='childrens') genreSpecific = `Age range: ${gVals.g_age}. Sub-genre: ${gVals.g_sub}. Core lesson: ${gVals.g_lesson}. Whimsy: ${gVals.g_whimsy}/10.`;
+
+  let seriesContext = '';
+  if (seriesData && bookNum) {
+    const pos = bookNum === 1 ? 'This is Book 1 — the opening. Establish the world, characters, and the central series conflict. End with a hook that promises more.'
+      : bookNum === totalBooks ? `This is Book ${bookNum} — the final instalment. All threads must resolve meaningfully. Characters complete their arcs.`
+      : `This is Book ${bookNum} of ${totalBooks}. Deepen existing threads, develop characters, raise stakes significantly, end on a compelling hook.`;
+    seriesContext = `\n\nSERIES CONTEXT:\n- Series name: ${seriesData.name}\n- World/setting: ${seriesData.world || 'as per book settings'}\n- Continuity: ${seriesData.continuity}\n- Overarching theme: ${seriesData.overarchingTheme || 'none specified'}\n- ${pos}${seriesData.prevBooks ? '\n- Previous books summary: ' + seriesData.prevBooks : ''}`;
+    if (seriesData.characters.length > 0) {
+      seriesContext += '\n- Recurring characters: ' + seriesData.characters.map(c =>
+        `${c.name} (${c.role}${c.trait?' — '+c.trait:''})${c.arc?' | Arc: '+c.arc:''}`).join('; ');
+    }
+  }
+
+  const authorContext = [
+    penName && `Author pen name: ${penName}`,
+    publisher && `Publisher/imprint: ${publisher}`,
+    market && `Target market: ${market}`,
+    styleNotes && `Author's style notes: ${styleNotes}`,
+    comps && `Comparable titles (comps): ${comps}`,
+    extraNotes && `Additional instructions: ${extraNotes}`,
+  ].filter(Boolean).join('\n');
+
+  return `You are a professional literary pitch writer helping an author develop book ideas.
+
+Generate TWO things for this ${genre.label} book idea:
+
+1. A TITLE SUGGESTION — evocative, marketable, fitting the genre and tone. Just the title on its own line labelled "TITLE:".
+
+2. A BACK-COVER BLURB — 150-200 words, written in the style of actual published back-cover copy. It should be gripping, hint at the central conflict, introduce the protagonist compellingly, and end with a hook question or statement. Do NOT use clichés like "In a world where..." Label it "BLURB:".
+
+BOOK PARAMETERS:
+- Genre: ${genre.label}
+- ${genreSpecific}
+- Protagonist: ${protagonist}
+- Setting: ${setting}
+- Scale: ${scale}
+- Tone: ${tone}
+- Theme: ${theme}
+- Violence level: ${violence}/10
+- Moral complexity: ${moralComplexity}/10
+- Sexual content: ${sexual}
+- Antagonist: ${antagonist}
+- Central relationship: ${relationship}
+- Narrative structure: ${structure}
+- Target audience: ${p.audience}
+- Format: ${wordCount ? wordCount.label + ' (' + wordCount.range + ' words)' : 'novel'}
+${dark.length > 0 ? '- Content includes: ' + dark.join(', ') : ''}
+${seriesContext}
+${authorContext ? '\nAUTHOR DETAILS:\n' + authorContext : ''}
+
+Write the TITLE and BLURB only. No preamble, no explanation.`;
+}
+
+function buildFallbackBlurb(p, seriesData, bookNum, totalBooks) {
+  const {genre, protagonist, setting, scale, tone, theme, violence, moralComplexity, antagonist, relationship, structure, dark, wordCount, gVals} = p;
+  const violenceDesc = +violence >= 8 ? 'viscerally violent' : +violence >= 5 ? 'moderately violent' : 'largely non-violent';
+  const moralDesc = +moralComplexity >= 8 ? 'deeply morally ambiguous' : +moralComplexity >= 5 ? 'ethically complex' : 'with clear moral stakes';
+  const darkNote = dark.length > 0 ? ` Content warnings: ${dark.slice(0,3).join(', ')}${dark.length>3?' and more':''}.` : '';
+  const wcNote = wordCount ? ` Format: ${wordCount.label} (${wordCount.range} words).` : '';
+  let seriesNote = '';
+  if (seriesData && bookNum) {
+    const pos = bookNum===1 ? 'Opening book: establish world and central series conflict.'
+      : bookNum===totalBooks ? 'Final book: all threads resolve, characters complete arcs.'
+      : `Book ${bookNum} of ${totalBooks}: deepen threads, raise stakes, end on a hook.`;
+    seriesNote = ` [${pos}]`;
+  }
+  return `TITLE: [Set your API key for an AI-generated title]\n\nBLURB:\nA ${tone.toLowerCase()} ${genre.label.toLowerCase()} following a ${protagonist.toLowerCase()} in a ${setting.toLowerCase()} at ${scale.toLowerCase()} scale. The central relationship is ${relationship.toLowerCase()}, facing off against ${antagonist.toLowerCase()}. Central theme: ${theme.toLowerCase()}. Told ${structure.toLowerCase()}, ${violenceDesc}, and ${moralDesc}.${wcNote}${darkNote}${seriesNote}`;
+}
+
+// ══════════════════════════════════════════════════════════
+//  RENDER CARD
+// ══════════════════════════════════════════════════════════
+const TITLE_STARTS = {
+  espionage:['The Last Agent','Before the Handler','Cover of','Dead Drop','The Moscow','No Safe House','Operation','The Defector','Eyes Only','The Sleeper'],
+  thriller:['The Last','Before the','The Silent','Behind Closed','No Way Out','The Final'],
+  romcom:['Accidentally','The Wrong','Technically Speaking','Against All','Somehow','Not Exactly'],
+  romance:['When We','Before I','Everything About','The Way You','Always and','One More'],
+  romantasy:['A Court of','The Blood and','Crown of Thorns and','Daughter of','When Stars and','The Fae Prince of','Shadow and'],
+  fantasy:['The Age of','Crown of','Shadows and','The Last','Of Blood and','The Blade of'],
+  scifi:['After the','The Long','Signal from','End of','The Memory of','When Earth'],
+  horror:['In the Dark of','What Waits','The Hollow','Before You Wake','Where They','The Rot Beneath'],
+  mystery:['The Case of','No One Saw','The Last Known','What the Dead','Evidence of','The Body at'],
+  crime:['The Price of','No Clean Hands','The Debt','Before the Law','Dirty','The Score'],
+  historical:['The Year of','Before the Storm','The Last Season of','Letters from','A Season in','The King\'s'],
+  ya:['The Girl Who','After Everything','I Was Never','We Were','Before I Knew','The Last Year of'],
+  childrens:['The Amazing','One Day in','The Mystery of','Adventures of','Max and the','Pip and the'],
+};
+const BOOK_SFXS = ['',': The Beginning',': Rising',': The Reckoning',': Aftermath',': Into the Dark',': New Blood',': The Last Stand',': Endgame',': Rebirth',': The Turning',': Beyond'];
+
+function renderCard(params, seriesData, bookNum, totalBooks, blurb) {
+  const {genre, protagonist, setting, theme, pacing, worldbuilding, dark, wordCount, gVals, penName, publisher} = params;
+
+  // Parse AI response for TITLE: and BLURB:
+  let titleText = '', blurbText = blurb || '';
+  if (blurb && blurb.includes('TITLE:')) {
+    const tm = blurb.match(/TITLE:\s*(.+)/);
+    const bm = blurb.match(/BLURB:\s*([\s\S]+)/);
+    if (tm) titleText = tm[1].trim();
+    if (bm) blurbText = bm[1].trim();
+  }
+  if (!titleText) {
+    // Fallback title
+    const pool = TITLE_STARTS[genre.id] || ['The Story of'];
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    titleText = `${pick} ${theme.split(' ')[0]}`;
+    if (bookNum && bookNum > 1) titleText += (BOOK_SFXS[bookNum] || ` (Book ${bookNum})`);
+  }
+
+  const tags = buildTags(params, bookNum);
+
+  const charBlock = seriesData && seriesData.characters.length > 0
+    ? `<div class="out-chars"><strong>📚 Recurring Characters</strong>
+        ${seriesData.characters.map(c =>
+          `<b>${c.name}</b>${c.role?' ('+c.role+')':''} ${c.trait?' — '+c.trait:''} ${c.arc?'<em>· Arc: '+c.arc+'</em>':''}`
+        ).join('<br>')}</div>` : '';
+
+  const authorBadge = penName ? `<span class="out-badge author">${penName}${publisher?' · '+publisher:''}</span>` : '';
+
+  return `<div class="output-card ${seriesData?'s-card':''} fade-in">
+    <div class="out-badges">
+      <span class="out-badge genre">${genre.icon} ${genre.label}</span>
+      ${bookNum ? `<span class="out-badge booknum">Book ${bookNum} of ${totalBooks}</span>` : ''}
+      ${authorBadge}
+    </div>
+    <div class="out-title">${titleText}</div>
+    ${charBlock}
+    <div class="out-blurb">${blurbText}</div>
+    <div class="out-tags">${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    <div class="out-actions">
+      <button class="btn-act" onclick="copyCard(this)">⎘ Copy</button>
+      <button class="btn-act pdf-btn" onclick="exportPDF()">⬇ Export PDF</button>
+      <button class="btn-act" style="border-color:#c9943a;color:#c9943a;" onclick="openDevelopFromCard(this)">✍️ Develop This Book</button>
+    </div>
+  </div>`;
+}
+
+function buildTags(p, bookNum) {
+  const tags = [
+    p.genre.label, p.tone.split(' ')[0], p.audience,
+    p.wordCount ? p.wordCount.label : '',
+    `Violence: ${p.violence}/10`,
+    `Pacing: ${p.pacing}/10`,
+    `Worldbuilding: ${p.worldbuilding}/10`,
+  ].filter(Boolean);
+  if (p.dark.length > 0) tags.push(`⚠ ${p.dark.length} dark element${p.dark.length>1?'s':''}`);
+  if (bookNum) tags.push(`Book ${bookNum}`);
+  const subKey = Object.keys(p.gVals).find(k => k==='g_sub');
+  if (subKey && p.gVals[subKey]) tags.push(p.gVals[subKey].slice(0,28));
+  return tags;
+}
+
+// ══════════════════════════════════════════════════════════
+//  COPY
+// ══════════════════════════════════════════════════════════
+function copyCard(btn) {
+  const card = btn.closest('.output-card');
+  const badges = [...card.querySelectorAll('.out-badge')].map(b=>b.textContent.trim()).join(' | ');
+  const title = card.querySelector('.out-title')?.textContent?.trim() || '';
+  const chars = card.querySelector('.out-chars')?.innerText?.trim() || '';
+  const blurb = card.querySelector('.out-blurb')?.textContent?.trim() || '';
+  const tags = [...card.querySelectorAll('.tag')].map(t=>t.textContent).join(' | ');
+  const parts = [badges, `TITLE: ${title}`, chars?`CHARACTERS:\n${chars}`:'', `BLURB:\n${blurb}`, `TAGS: ${tags}`].filter(Boolean);
+  navigator.clipboard.writeText(parts.join('\n\n')).then(() => {
+    const o = btn.textContent; btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = o, 2000);
+  });
+}
+
+function copyAll() {
+  const header = document.querySelector('.series-out-header')?.textContent?.trim() || '';
+  const blocks = [...document.querySelectorAll('.output-card')].map(card => {
+    const badges = [...card.querySelectorAll('.out-badge')].map(b=>b.textContent.trim()).join(' | ');
+    const title = card.querySelector('.out-title')?.textContent?.trim() || '';
+    const chars = card.querySelector('.out-chars')?.innerText?.trim() || '';
+    const blurb = card.querySelector('.out-blurb')?.textContent?.trim() || '';
+    const tags = [...card.querySelectorAll('.tag')].map(t=>t.textContent).join(' | ');
+    return [badges, `TITLE: ${title}`, chars?`CHARACTERS:\n${chars}`:'', `BLURB:\n${blurb}`, `TAGS: ${tags}`].filter(Boolean).join('\n');
+  });
+  const text = `SERIES BRIEF: ${header}\n${'═'.repeat(60)}\n\n` + blocks.join('\n\n' + '─'.repeat(40) + '\n\n');
+  navigator.clipboard.writeText(text).then(() => showToast('✓ Full series brief copied!'));
+}
+
+// ══════════════════════════════════════════════════════════
+//  EXPORT PDF
+// ══════════════════════════════════════════════════════════
+function exportPDF() {
+  const cards = [...document.querySelectorAll('.output-card')];
+  if (!cards.length) return;
+  const seriesHeader = document.querySelector('.series-out-header')?.textContent?.trim() || '';
+
+  let html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>Book Brief</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Mono:wght@400&display=swap');
+  body{font-family:'DM Mono',monospace;font-size:10pt;color:#1a1008;max-width:680px;margin:0 auto;padding:32px;}
+  h1{font-family:'Playfair Display',serif;font-size:20pt;margin-bottom:4px;}
+  .series-h{font-family:'Playfair Display',serif;font-size:14pt;color:#3a6bb5;border-bottom:2px solid #a8c0e8;padding-bottom:6px;margin-bottom:14px;}
+  .card{border-left:4px solid #b5451b;padding:14px 18px;margin-bottom:20px;background:#faf4ec;page-break-inside:avoid;}
+  .card.sc{border-left-color:#3a6bb5;}
+  .badges{font-size:7pt;letter-spacing:.1em;text-transform:uppercase;color:#b5451b;margin-bottom:8px;}
+  .title{font-family:'Playfair Display',serif;font-size:14pt;font-weight:700;margin-bottom:8px;}
+  .blurb{font-size:9.5pt;line-height:1.7;color:#5a4a38;white-space:pre-wrap;border-top:1px dashed #c8b89a;padding-top:8px;margin-bottom:8px;}
+  .chars{font-size:8.5pt;color:#3a6bb5;background:#eef3fc;padding:6px 10px;margin-bottom:8px;border:1px solid #a8c0e8;}
+  .tags{font-size:7pt;color:#7a6a58;}
+  .tag{display:inline-block;background:#ede0cc;border:1px solid #c8b89a;padding:1px 6px;margin:1px;border-radius:1px;}
+  @media print{body{padding:0;}.card{page-break-inside:avoid;}}
+</style></head><body>`;
+
+  if (seriesHeader) html += `<div class="series-h">📚 ${seriesHeader}</div>`;
+
+  cards.forEach(card => {
+    const isSeries = card.classList.contains('s-card');
+    const badges = [...card.querySelectorAll('.out-badge')].map(b=>b.textContent.trim()).join(' &nbsp;·&nbsp; ');
+    const title = card.querySelector('.out-title')?.textContent?.trim() || '';
+    const chars = card.querySelector('.out-chars')?.innerText?.trim() || '';
+    const blurb = card.querySelector('.out-blurb')?.textContent?.trim() || '';
+    const tags = [...card.querySelectorAll('.tag')].map(t=>`<span class="tag">${t.textContent}</span>`).join('');
+    html += `<div class="card ${isSeries?'sc':''}">
+      <div class="badges">${badges}</div>
+      <div class="title">${title}</div>
+      ${chars?`<div class="chars"><b>Recurring Characters:</b><br>${chars.replace(/\n/g,'<br>')}</div>`:''}
+      <div class="blurb">${blurb}</div>
+      <div class="tags">${tags}</div>
+    </div>`;
+  });
+
+  html += `</body></html>`;
+  const win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
+  setTimeout(() => win.print(), 600);
+}
+
+// ══════════════════════════════════════════════════════════
+//  PRESETS
+// ══════════════════════════════════════════════════════════
+function savePreset() {
+  document.getElementById('presetModal').classList.remove('hidden');
+  document.getElementById('presetNameInput').focus();
+}
+function closePresetModal() { document.getElementById('presetModal').classList.add('hidden'); }
+
+function confirmSavePreset() {
+  const name = document.getElementById('presetNameInput').value.trim();
+  if (!name) { alert('Please enter a name for the preset.'); return; }
+
+  const params = collectParams();
+  const seriesData = collectSeriesData();
+
+  // Collect all field values
+  const fieldSnapshot = {};
+  COMMON_FIELDS.forEach(s => s.fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (el) fieldSnapshot[f.id] = el.value;
+  }));
+  Object.values(GENRE_FIELDS).forEach(gf => gf.fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (el) fieldSnapshot[f.id] = el.value;
+  }));
+
+  const preset = {
+    id: Date.now(),
+    name,
+    genre: activeGenre,
+    wordCount: selectedWC,
+    tabooState: {...tabooState},
+    tabooDefaults: [...tabooDefaults],
+    fieldSnapshot,
+    seriesEnabled: document.getElementById('seriesEnabled').checked,
+    seriesData,
+    seriesBookCount,
+    chars: JSON.parse(JSON.stringify(chars)),
+    author: {
+      penName: gv('penName'), publisher: gv('publisher'),
+      market: gv('market'), styleNotes: gv('styleNotes'),
+      comps: gv('comps'), extraNotes: gv('extraNotes'),
+    }
+  };
+
+  presets.push(preset);
+  savePresets();
+  renderPresets();
+  closePresetModal();
+  document.getElementById('presetNameInput').value = '';
+  showToast(`✓ Preset "${name}" saved`);
+}
+
+function loadPreset(id) {
+  const p = presets.find(x => x.id === id);
+  if (!p) return;
+
+  activeGenre = p.genre;
+  selectedWC = p.wordCount;
+  tabooState = {...p.tabooState};
+  tabooDefaults = new Set(p.tabooDefaults || []);
+  seriesBookCount = p.seriesBookCount || 3;
+  chars = JSON.parse(JSON.stringify(p.chars || []));
+  charId = chars.reduce((m, c) => Math.max(m, c.id), 0);
+
+  // Re-render structure
+  renderGenreTabs();
+  renderCommonFields();
+  renderGenreFields();
+
+  // Restore field values
+  setTimeout(() => {
+    if (p.fieldSnapshot) {
+      Object.entries(p.fieldSnapshot).forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.value = val;
+          // Update range display
+          if (el.type === 'range' && el.nextElementSibling) {
+            el.nextElementSibling.textContent = val;
+          }
+        }
+      });
+    }
+    // Restore author fields
+    if (p.author) {
+      Object.entries(p.author).forEach(([k, v]) => {
+        const el = document.getElementById(k);
+        if (el) el.value = v || '';
+      });
+    }
+    // Restore series
+    document.getElementById('seriesEnabled').checked = p.seriesEnabled || false;
+    toggleSeriesConfig();
+    if (p.seriesData) {
+      document.getElementById('seriesName').value = p.seriesData.name || '';
+      document.getElementById('seriesWorld').value = p.seriesData.world || '';
+      document.getElementById('seriesContinuity').value = p.seriesData.continuity || '';
+      document.getElementById('seriesTheme').value = p.seriesData.overarchingTheme || '';
+      document.getElementById('prevBooks').value = p.seriesData.prevBooks || '';
+    }
+    document.getElementById('bookCnt').textContent = seriesBookCount;
+    renderCharList();
+    refreshTabooGrid();
+    document.getElementById('wcSection').innerHTML = renderWCSelector();
+  }, 50);
+
+  showToast(`✓ Preset "${p.name}" loaded`);
+}
+
+function deletePreset(id, e) {
+  e.stopPropagation();
+  presets = presets.filter(p => p.id !== id);
+  savePresets();
+  renderPresets();
+}
+
+function savePresets() {
+  try { localStorage.setItem('bookgen_presets', JSON.stringify(presets)); } catch(e) {}
+}
+
+function renderPresets() {
+  const grid = document.getElementById('presetGrid');
+  const hint = document.getElementById('noPresetsHint');
+  if (!presets.length) {
+    grid.innerHTML = '';
+    hint.style.display = 'block';
+    return;
+  }
+  hint.style.display = 'none';
+  grid.innerHTML = presets.map(p => `
+    <div class="preset-chip" onclick="loadPreset(${p.id})">
+      ${GENRES.find(g=>g.id===p.genre)?.icon || ''} ${p.name}
+      <span class="del-chip" onclick="deletePreset(${p.id}, event)" title="Delete preset">✕</span>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  JSON EXPORT / IMPORT
+// ══════════════════════════════════════════════════════════
+function exportJSON() {
+  const params = collectParams();
+  const data = {
+    _version: 2,
+    genre: activeGenre,
+    wordCount: selectedWC,
+    tabooState, tabooDefaults: [...tabooDefaults],
+    seriesEnabled: document.getElementById('seriesEnabled').checked,
+    seriesBookCount,
+    seriesData: collectSeriesData(),
+    chars,
+    author: {penName:gv('penName'),publisher:gv('publisher'),market:gv('market'),styleNotes:gv('styleNotes'),comps:gv('comps'),extraNotes:gv('extraNotes')},
+    presets,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `bookgen-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+function importJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      if (d.presets) { presets = d.presets; savePresets(); renderPresets(); }
+      if (d.tabooDefaults) tabooDefaults = new Set(d.tabooDefaults);
+      if (d.tabooState) { tabooState = d.tabooState; }
+      if (d.genre) { activeGenre = d.genre; }
+      if (d.wordCount) selectedWC = d.wordCount;
+      if (d.chars) chars = d.chars;
+      if (d.seriesBookCount) seriesBookCount = d.seriesBookCount;
+      renderGenreTabs(); renderCommonFields(); renderGenreFields();
+      setTimeout(() => {
+        if (d.author) Object.entries(d.author).forEach(([k,v]) => { const el = document.getElementById(k); if(el) el.value=v||''; });
+        if (d.seriesEnabled) { document.getElementById('seriesEnabled').checked = true; toggleSeriesConfig(); }
+        if (d.seriesData) {
+          document.getElementById('seriesName').value = d.seriesData.name||'';
+          document.getElementById('seriesWorld').value = d.seriesData.world||'';
+        }
+        document.getElementById('bookCnt').textContent = seriesBookCount;
+        renderCharList(); refreshTabooGrid();
+        document.getElementById('wcSection').innerHTML = renderWCSelector();
+      }, 50);
+      showToast('✓ Config imported successfully');
+    } catch(err) { alert('Import failed: ' + err.message); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ══════════════════════════════════════════════════════════
+//  API KEY MODAL
+// ══════════════════════════════════════════════════════════
+function openApiModal() { document.getElementById('apiModal').classList.remove('hidden'); }
+function closeApiModal() { document.getElementById('apiModal').classList.add('hidden'); }
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  // Save to both localStorage and sessionStorage for maximum persistence
+  try { localStorage.setItem('bookgen_apikey', key); } catch(e) {}
+  try { sessionStorage.setItem('bookgen_apikey', key); } catch(e) {}
+  closeApiModal();
+  updateApiStatus(key);
+  const note = document.getElementById('apiNote');
+  if (key) {
+    note.style.background = '#edf7f1';
+    note.style.borderColor = '#8ecbaa';
+    note.innerHTML = '<b style="color:var(--green)">✓ API Key set.</b> AI pitch generation is active. Using claude-sonnet-4-20250514.';
+  } else {
+    note.style.background = '';
+    note.style.borderColor = '';
+    note.innerHTML = '<b>AI Pitch Generation:</b> Set your Anthropic API key (button top-right) to enable full AI-written back-cover blurbs. Without a key, a structured template pitch is generated instead.';
+  }
+  showToast(key ? '✓ API key saved' : 'API key cleared');
+}
+
+function updateApiStatus(key) {
+  const el = document.getElementById('apiStatus');
+  if (!el) return;
+  if (key) {
+    el.style.display = 'inline-block';
+    el.style.background = '#edf7f1';
+    el.style.color = '#2a7a4a';
+    el.style.border = '1px solid #8ecbaa';
+    el.textContent = '✓ AI Active';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// Also read key from both storages when needed
+function getApiKey() {
+  return localStorage.getItem('bookgen_apikey') || sessionStorage.getItem('bookgen_apikey') || '';
+}
+
+// ══════════════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════════════
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ink);color:var(--light);font-family:DM Mono,monospace;font-size:.7rem;letter-spacing:.08em;padding:.55rem 1.1rem;border-radius:3px;z-index:9999;transition:opacity .3s;opacity:0;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+}
+
+// ══════════════════════════════════════════════════════════
+//  KEYBOARD
+// ══════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeApiModal(); closePresetModal(); }
+  if (e.key === 'Enter' && !document.getElementById('presetModal').classList.contains('hidden')) {
+    confirmSavePreset();
+  }
+});
+
+// ══════════════════════════════════════════════════════════
+//  DEVELOP THIS BOOK
+// ══════════════════════════════════════════════════════════
+
+// Stores the current brief context for the develop panel
+let developContext = null;
+// Stores generated doc results keyed by doc id
+let developResults = {};
+
+const DOC_SUITE = [
+  {
+    id: 'synopsis_short',
+    icon: '📄',
+    label: '1-Page Synopsis',
+    desc: 'A single-page narrative summary for agents & publishers',
+    prompt: (ctx) => `You are a professional literary editor. Write a polished 1-page synopsis (350–450 words) for the following book. A synopsis tells the FULL story including the ending — it is not a back-cover blurb. Write in present tense, third person. Cover: protagonist and their goal, the inciting incident, key plot turns, the climax, and the resolution. Be specific and concrete. Do not use vague generalities.
+
+${ctx}
+
+Return only the synopsis text with no preamble or labels.`
+  },
+  {
+    id: 'synopsis_long',
+    icon: '📋',
+    label: '3-Page Synopsis',
+    desc: 'Extended synopsis with full plot structure and arc detail',
+    prompt: (ctx) => `You are a professional literary editor. Write a detailed 3-page synopsis (900–1100 words) for the following book. A synopsis tells the FULL story including the ending. Write in present tense, third person. Structure it clearly with these sections:
+
+ACT ONE — Setup, protagonist introduction, world, inciting incident
+ACT TWO — Rising action, complications, midpoint shift, darkest moment  
+ACT THREE — Climax, resolution, character arc completion
+
+Use clear paragraph breaks. Be specific about plot events, character motivations, and emotional beats. Include the ending.
+
+${ctx}
+
+Return only the synopsis text with clear section headers. No preamble.`
+  },
+  {
+    id: 'chapter_outline',
+    icon: '🗂️',
+    label: 'Chapter Outline',
+    desc: 'Beat-by-beat chapter structure with scene goals',
+    prompt: (ctx) => `You are a professional story editor. Create a detailed chapter-by-chapter outline for the following book. 
+
+For each chapter provide:
+- Chapter number and a working title
+- POV character (if applicable)
+- Setting / location
+- Key events (2–4 bullet points)
+- Scene goal: what the protagonist wants
+- Scene conflict: what gets in the way
+- Scene outcome: what changes
+- Emotional beat: what the reader should feel
+
+Aim for a realistic chapter count given the format (short story = 5–8 chapters, novella = 10–15, novel = 20–30, epic = 30–45).
+
+${ctx}
+
+Format clearly. No preamble.`
+  },
+  {
+    id: 'character_profiles',
+    icon: '👤',
+    label: 'Character Profiles',
+    desc: 'Full profiles for protagonist, antagonist & key cast',
+    prompt: (ctx) => `You are a professional story editor. Create detailed character profiles for this book. Include profiles for:
+
+1. The protagonist
+2. The antagonist (or main opposing force)
+3. 2–3 key supporting characters
+
+For each character include:
+- Full name (and nickname if appropriate)
+- Age, appearance (brief, evocative)
+- Background / backstory relevant to the story
+- Core personality traits (3–5)
+- Primary motivation / what they want
+- Internal flaw or wound
+- External goal in this story
+- Character arc: where they start vs. where they end
+- Voice / speech style (one example line of dialogue)
+- Relationship to other key characters
+
+${ctx}
+
+Format clearly with a header for each character. No preamble.`
+  },
+  {
+    id: 'world_bible',
+    icon: '🌍',
+    label: 'World Bible',
+    desc: 'Setting rules, history, tone & world logic notes',
+    prompt: (ctx) => `You are a professional world-builder and story editor. Create a world bible / setting document for the following book.
+
+Include sections on:
+- OVERVIEW: The world in one paragraph — what kind of place is this?
+- HISTORY & CONTEXT: Relevant backstory and world events that shape the present
+- GEOGRAPHY & LOCATIONS: Key settings described in specific, sensory detail
+- SOCIETY & CULTURE: Class structure, customs, values, tensions
+- RULES & SYSTEMS: Any rules that govern this world (magic, technology, law, economics)
+- TONE & ATMOSPHERE: How the world feels — weather, light, sounds, smells
+- WHAT MAKES THIS WORLD UNIQUE: The 2–3 things that distinguish it from similar stories
+- THINGS THAT ARE FORBIDDEN OR IMPOSSIBLE: What can't happen here and why
+
+Keep each section focused and practical — this is a writing reference, not an encyclopedia.
+
+${ctx}
+
+Format with clear section headers. No preamble.`
+  },
+  {
+    id: 'query_letter',
+    icon: '✉️',
+    label: 'Query Letter',
+    desc: 'Submission-ready letter for literary agents',
+    prompt: (ctx) => `You are a literary agent assistant with expertise in book submissions. Write a professional query letter for the following book.
+
+A query letter has four parts:
+1. HOOK (1–2 sentences): The most compelling thing about this book
+2. PITCH (2–3 paragraphs): The story — protagonist, stakes, conflict, what makes this book distinctive. Written like a back-cover blurb but slightly more detailed. Do NOT reveal the ending.
+3. BOOK DETAILS (1 paragraph): Title, genre, word count, comparable titles (comps), and why this book fits the current market
+4. AUTHOR BIO (1 paragraph): Brief, professional, relevant credentials or personal connection to the material
+
+Write in a confident, professional tone. The letter should be 350–450 words total.
+
+${ctx}
+
+Return only the query letter text, formatted as a proper letter. No preamble.`
+  },
+  {
+    id: 'first_chapter',
+    icon: '📖',
+    label: 'Opening Chapter',
+    desc: 'A full draft of Chapter 1 in the book\'s voice',
+    prompt: (ctx) => `You are a skilled fiction writer. Write a complete, polished opening chapter for the following book. 
+
+The opening chapter should:
+- Begin in media res or with an immediately compelling scene
+- Establish the protagonist's voice and world clearly
+- Hint at the central conflict without fully revealing it
+- End with a hook that compels the reader to turn the page
+- Match the tone, pacing, and style indicated in the brief
+- Be 1,200–1,800 words
+
+Write the actual chapter — narrative prose, dialogue, scene. Not an outline or summary.
+
+${ctx}
+
+Return only the chapter text with "CHAPTER ONE" as the header. No preamble.`
+  },
+  {
+    id: 'cover_art_brief',
+    icon: '🎨',
+    label: 'Cover Art Brief',
+    desc: 'Detailed visual brief for designers or AI image tools',
+    prompt: (ctx) => `You are a professional book cover art director. Write a detailed cover art brief for the following book that could be handed to a designer or used as a prompt for AI image generation tools like Midjourney or Adobe Firefly.
+
+Include:
+- CONCEPT: The core visual idea for the cover (1–2 sentences)
+- MOOD & ATMOSPHERE: Lighting, colour palette, emotional register
+- CENTRAL IMAGE / FOCAL POINT: What is the main visual element?
+- TYPOGRAPHY STYLE: Suggested font mood (serif/sans, elegant/bold, handwritten etc.)
+- COMPARABLE COVERS: 3–4 real published book covers this should feel similar to
+- WHAT TO AVOID: Visual clichés for this genre to steer clear of
+- MIDJOURNEY PROMPT: A ready-to-use prompt (100–150 words) optimised for AI image generation, describing the ideal cover image in detail
+
+${ctx}
+
+Format with clear section headers. No preamble.`
+  },
+  {
+    id: 'marketing_copy',
+    icon: '📣',
+    label: 'Marketing Copy',
+    desc: 'Social posts, Amazon description & press release',
+    prompt: (ctx) => `You are a book marketing specialist. Write a complete marketing copy pack for the following book. Include:
+
+**AMAZON / RETAILER DESCRIPTION** (300–400 words)
+Compelling sales copy formatted for online retail. Uses short paragraphs, bold key phrases, and ends with a strong call to action.
+
+**TAGLINE OPTIONS** (5 options)
+One-line hooks under 12 words each.
+
+**SOCIAL MEDIA POSTS**
+- Instagram caption (150 words, with suggested hashtags)
+- Twitter/X post (under 280 characters)  
+- Facebook post (100 words, conversational)
+- TikTok BookTok hook (opening 3 seconds spoken aloud + caption)
+
+**PRESS RELEASE EXCERPT** (150 words)
+Opening paragraph of a formal press release announcing the book.
+
+**NEWSLETTER ANNOUNCEMENT** (200 words)
+For the author's mailing list — personal, warm, excited tone.
+
+${ctx}
+
+Format with clear bold headers for each section. No preamble.`
+  },
+  {
+    id: 'sensitivity_notes',
+    icon: '🛡️',
+    label: 'Sensitivity Notes',
+    desc: 'Content guidance, rep considerations & reader advisories',
+    prompt: (ctx) => `You are a sensitivity reader and editorial consultant. Based on the following book brief, produce a professional sensitivity and content advisory document.
+
+Include:
+- CONTENT WARNINGS: Full list of content warnings for readers, formatted as they would appear in a published book
+- REPRESENTATION CONSIDERATIONS: Any identities, cultures, experiences, or communities represented in this story that may require sensitivity reading or lived-experience consultation
+- POTENTIAL SENSITIVITIES BY GENRE: Specific tropes or plot elements in this genre that have known sensitivities
+- RESEARCH RECOMMENDATIONS: Topics in this brief that would benefit from expert research or consultation
+- READER ADVISORIES: Suggested age rating and any platform-specific content flags (e.g. for Wattpad, Amazon content guidelines, library collections)
+- EDITORIAL NOTES: Any elements in the brief that may require careful handling in the manuscript
+
+Be practical and specific. This document helps the author be a responsible, informed storyteller.
+
+${ctx}
+
+Format with clear headers. No preamble.`
+  },
+];
+
+function buildDevelopContext(cardEl) {
+  // Extract brief data from the output card
+  const title = cardEl.querySelector('.out-title')?.textContent?.trim() || '';
+  const blurb = cardEl.querySelector('.out-blurb')?.textContent?.trim() || '';
+  const badges = [...cardEl.querySelectorAll('.out-badge')].map(b => b.textContent.trim()).join(' | ');
+  const chars = cardEl.querySelector('.out-chars')?.innerText?.trim() || '';
+  const tags = [...cardEl.querySelectorAll('.tag')].map(t => t.textContent.trim()).join(', ');
+
+  // Get author settings
+  const penName = gv('penName');
+  const styleNotes = gv('styleNotes');
+  const comps = gv('comps');
+  const extraNotes = gv('extraNotes');
+  const market = gv('market');
+
+  let ctx = `BOOK BRIEF:
+Title: ${title}
+${badges}
+Tags: ${tags}
+
+${blurb}`;
+
+  if (chars) ctx += `\n\nCharacters:\n${chars}`;
+  if (penName) ctx += `\n\nAuthor: ${penName}`;
+  if (market) ctx += `\nTarget market: ${market}`;
+  if (styleNotes) ctx += `\nStyle notes: ${styleNotes}`;
+  if (comps) ctx += `\nComparable titles: ${comps}`;
+  if (extraNotes) ctx += `\nAdditional notes: ${extraNotes}`;
+
+  return ctx;
+}
+
+async function generateAllDocs() {
+  if (!developContext) return;
+  const btn = document.getElementById('btnGenAll');
+  const status = document.getElementById('genAllStatus');
+  const bar = document.getElementById('genAllBar');
+  const progress = document.getElementById('genAllProgress');
+
+  btn.disabled = true;
+  btn.classList.add('running');
+  btn.textContent = '⏳ Generating All…';
+  progress.style.display = 'block';
+  bar.style.width = '0%';
+
+  const total = DOC_SUITE.length;
+  let done = 0;
+
+  for (const doc of DOC_SUITE) {
+    status.textContent = `${done + 1} of ${total} — writing ${doc.label}…`;
+    await generateDoc(doc.id);
+    done++;
+    bar.style.width = Math.round((done / total) * 100) + '%';
+  }
+
+  btn.disabled = false;
+  btn.classList.remove('running');
+  btn.textContent = '✓ All Documents Generated';
+  status.textContent = `${total} documents ready — scroll down to view`;
+  setTimeout(() => {
+    btn.textContent = '✦ Regenerate All';
+    btn.style.fontStyle = 'italic';
+  }, 3000);
+  // Scroll to first result
+  const first = document.getElementById('docresult_' + DOC_SUITE[0].id);
+  if (first) first.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function openDevelopPanel(cardEl, bookLabel) {
+  developContext = buildDevelopContext(cardEl);
+  developResults = {};
+
+  // Update label
+  document.getElementById('developBookLabel').textContent = bookLabel || 'Single Book';
+
+  // Render doc buttons
+  document.getElementById('docGrid').innerHTML = DOC_SUITE.map(doc => `
+    <button class="doc-btn" id="docbtn_${doc.id}" onclick="generateDoc('${doc.id}')">
+      <span class="doc-icon">${doc.icon}</span>
+      <span class="doc-label">${doc.label}</span>
+      <span class="doc-desc">${doc.desc}</span>
+    </button>`).join('');
+
+  document.getElementById('docOutputArea').innerHTML = '';
+  document.getElementById('developFooter').style.display = 'none';
+  // Reset generate-all button state
+  const genBtn = document.getElementById('btnGenAll');
+  if (genBtn) { genBtn.disabled = false; genBtn.classList.remove('running'); genBtn.textContent = '✦ Generate All Documents'; }
+  const genStatus = document.getElementById('genAllStatus');
+  if (genStatus) genStatus.textContent = '';
+  const genBar = document.getElementById('genAllBar');
+  if (genBar) genBar.style.width = '0%';
+  const genProgress = document.getElementById('genAllProgress');
+  if (genProgress) genProgress.style.display = 'none';
+
+  // Show panel and scroll
+  const panel = document.getElementById('developPanel');
+  panel.style.display = 'block';
+  setTimeout(() => panel.scrollIntoView({behavior:'smooth', block:'start'}), 100);
+}
+
+async function generateDoc(docId) {
+  const doc = DOC_SUITE.find(d => d.id === docId);
+  if (!doc || !developContext) return;
+
+  const apiKey = getApiKey();
+  const btn = document.getElementById('docbtn_' + docId);
+
+  // Mark button as running
+  btn.classList.add('running');
+  btn.innerHTML = `<span class="doc-icon">${doc.icon}</span><span class="doc-label">Generating...</span><span class="doc-desc">Please wait</span>`;
+
+  // Show loading in output area
+  let resultEl = document.getElementById('docresult_' + docId);
+  if (!resultEl) {
+    resultEl = document.createElement('div');
+    resultEl.id = 'docresult_' + docId;
+    resultEl.className = 'doc-result';
+    document.getElementById('docOutputArea').appendChild(resultEl);
+  }
+  resultEl.innerHTML = `<div class="doc-loading"><span class="spinner"></span> Writing ${doc.label}...</div>`;
+  resultEl.scrollIntoView({behavior:'smooth', block:'nearest'});
+
+  let content = '';
+  if (!apiKey) {
+    content = `⚠ No API key set. Please click "Set API Key" in the toolbar to enable AI document generation.\n\nWithout a key, AI-powered documents are not available.`;
+  } else {
+    const prompt = doc.prompt(developContext);
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 2000,
+          messages: [{role: 'user', content: prompt}]
+        })
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        content = `API Error ${res.status}: ${err.error?.message || res.statusText}`;
+      } else {
+        const data = await res.json();
+        content = data.content?.map(b => b.text || '').join('') || 'No response received.';
+      }
+    } catch(e) {
+      content = `Network error: ${e.message}`;
+    }
+  }
+
+  // Store result
+  developResults[docId] = {label: doc.label, icon: doc.icon, content};
+
+  // Render result
+  const formattedContent = formatDocContent(content);
+  resultEl.innerHTML = `
+    <div class="doc-result-header">
+      <div class="doc-result-title">${doc.icon} ${doc.label}</div>
+      <div class="doc-result-actions">
+        <button class="doc-act-btn" onclick="copyDoc('${docId}')">⎘ Copy</button>
+        <button class="doc-act-btn pdf-act" onclick="exportSingleDocPDF('${docId}')">⬇ PDF</button>
+      </div>
+    </div>
+    <div class="doc-content" id="doccontent_${docId}">${formattedContent}</div>`;
+
+  // Update button to done
+  btn.classList.remove('running');
+  btn.classList.add('done');
+  btn.innerHTML = `<span class="doc-icon">✓</span><span class="doc-label">${doc.label}</span><span class="doc-desc">Click to regenerate</span>`;
+  btn.onclick = () => {
+    btn.classList.remove('done');
+    btn.innerHTML = `<span class="doc-icon">${doc.icon}</span><span class="doc-label">${doc.label}</span><span class="doc-desc">${doc.desc}</span>`;
+    generateDoc(docId);
+  };
+
+  // Show footer if any docs generated
+  document.getElementById('developFooter').style.display = 'flex';
+}
+
+function formatDocContent(text) {
+  // Convert markdown-style formatting to HTML
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^#{1,2}\s+(.+)$/gm, '<h3>$1</h3>')
+    .replace(/^#{3,4}\s+(.+)$/gm, '<h4>$1</h4>')
+    .replace(/^[A-Z][A-Z\s\/&]+:$/gm, m => `<h4>${m}</h4>`)
+    .replace(/\n{3,}/g, '\n\n');
+}
+
+function copyDoc(docId) {
+  const result = developResults[docId];
+  if (!result) return;
+  const el = document.getElementById('doccontent_' + docId);
+  const text = el ? el.innerText : result.content;
+  navigator.clipboard.writeText(`${result.label.toUpperCase()}\n${'─'.repeat(40)}\n\n${text}`).then(() => {
+    showToast(`✓ ${result.label} copied`);
+  });
+}
+
+function copyAllDocs() {
+  const parts = Object.entries(developResults).map(([id, r]) => {
+    const el = document.getElementById('doccontent_' + id);
+    const text = el ? el.innerText : r.content;
+    return `${r.icon} ${r.label.toUpperCase()}\n${'═'.repeat(50)}\n\n${text}`;
+  });
+  if (!parts.length) { showToast('No documents generated yet'); return; }
+  const title = document.getElementById('developBookLabel').textContent;
+  navigator.clipboard.writeText(`BOOK DEVELOPMENT DOCUMENTS — ${title}\n\n` + parts.join('\n\n' + '─'.repeat(60) + '\n\n'))
+    .then(() => showToast('✓ All documents copied'));
+}
+
+function exportSingleDocPDF(docId) {
+  const result = developResults[docId];
+  if (!result) return;
+  const el = document.getElementById('doccontent_' + docId);
+  const html = el ? el.innerHTML : result.content.replace(/\n/g, '<br>');
+  const bookLabel = document.getElementById('developBookLabel').textContent;
+  openDocPDF(`${result.icon} ${result.label}`, bookLabel, html);
+}
+
+function exportDocsPDF() {
+  if (!Object.keys(developResults).length) { showToast('Generate some documents first'); return; }
+  const bookLabel = document.getElementById('developBookLabel').textContent;
+  let combinedHtml = '';
+  Object.entries(developResults).forEach(([id, r]) => {
+    const el = document.getElementById('doccontent_' + id);
+    const html = el ? el.innerHTML : r.content.replace(/\n/g,'<br>');
+    combinedHtml += `<div class="doc-section">
+      <div class="doc-sec-title">${r.icon} ${r.label}</div>
+      <div class="doc-body">${html}</div>
+    </div>`;
+  });
+  openDocPDF('Book Development Documents', bookLabel, combinedHtml, true);
+}
+
+function openDocPDF(title, subtitle, bodyHtml, multi = false) {
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>${title}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Mono:wght@400&display=swap');
+  body{font-family:'DM Mono',monospace;font-size:10.5pt;color:#1a1008;max-width:700px;margin:0 auto;padding:36px 32px;}
+  .cover{border-bottom:3px solid #b5451b;margin-bottom:28px;padding-bottom:16px;}
+  .cover-title{font-family:'Playfair Display',serif;font-size:18pt;font-weight:900;margin-bottom:4px;}
+  .cover-sub{font-size:8pt;letter-spacing:.2em;text-transform:uppercase;color:#7a6a58;}
+  h3{font-family:'Playfair Display',serif;font-size:13pt;margin:16px 0 6px;}
+  h4{font-size:8pt;letter-spacing:.15em;text-transform:uppercase;color:#b5451b;margin:14px 0 4px;border-bottom:1px solid #c8b89a;padding-bottom:3px;}
+  p,div{line-height:1.75;}
+  .doc-section{page-break-before:${multi?'always':'auto'};margin-bottom:30px;}
+  .doc-section:first-child{page-break-before:auto;}
+  .doc-sec-title{font-family:'Playfair Display',serif;font-size:14pt;font-weight:700;color:#3a6bb5;border-bottom:2px solid #a8c0e8;padding-bottom:6px;margin-bottom:16px;}
+  .doc-body{font-size:10pt;line-height:1.8;}
+  strong{font-weight:600;}
+  @media print{body{padding:0;}}
+</style></head><body>
+<div class="cover">
+  <div class="cover-title">${title}</div>
+  <div class="cover-sub">${subtitle}</div>
+</div>
+<div class="doc-body">${bodyHtml}</div>
+</body></html>`);
+  win.document.close();
+  setTimeout(() => win.print(), 700);
+}
+
+function openDevelopFromCard(btn) {
+  const card = btn.closest('.output-card');
+  const bookNumEl = card.querySelector('.output-book-num, .out-badge.booknum');
+  const titleEl = card.querySelector('.out-title');
+  const label = bookNumEl ? bookNumEl.textContent.trim() : (titleEl ? titleEl.textContent.trim().slice(0,40) : 'Single Book');
+  openDevelopPanel(card, label);
+}
+
+// ══════════════════════════════════════════════════════════
+//  START
+// ══════════════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
