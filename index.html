@@ -432,18 +432,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;heigh
 // ══════════════════════════════════════════════════════════
 
 const GENRES = [
-  {id:'thriller', label:'Thriller',    icon:'🔪'},
-  {id:'romance',  label:'Romance',     icon:'🌹'},
-  {id:'romcom',   label:'Rom-Com',     icon:'😂'},
-  {id:'fantasy',  label:'Fantasy',     icon:'⚔️'},
-  {id:'scifi',    label:'Sci-Fi',      icon:'🚀'},
-  {id:'horror',   label:'Horror',      icon:'🦇'},
-  {id:'mystery',  label:'Mystery',     icon:'🔍'},
-  {id:'historical',label:'Historical', icon:'🏰'},
-  {id:'literary', label:'Literary',    icon:'📖'},
-  {id:'crime',    label:'Crime',       icon:'🚔'},
-  {id:'western',  label:'Western',     icon:'🤠'},
-  {id:'childrens',label:"Children's",  icon:'🌟'},
+  {id:'espionage',  label:'Espionage',         icon:'🕵️'},
+  {id:'thriller',   label:'Thriller',           icon:'🔪'},
+  {id:'romcom',     label:'Rom-Com',            icon:'😂'},
+  {id:'romance',    label:'Romance',            icon:'🌹'},
+  {id:'romantasy',  label:'Romantasy',          icon:'✨'},
+  {id:'fantasy',    label:'Fantasy',            icon:'⚔️'},
+  {id:'scifi',      label:'Sci-Fi',             icon:'🚀'},
+  {id:'horror',     label:'Horror',             icon:'🦇'},
+  {id:'mystery',    label:'Mystery',            icon:'🔍'},
+  {id:'crime',      label:'Crime',              icon:'🚔'},
+  {id:'historical', label:'Historical Fiction', icon:'🏰'},
+  {id:'ya',         label:'Young Adult',        icon:'🌟'},
+  {id:'childrens',  label:"Children's",         icon:'📚'},
 ];
 
 const WC_OPTIONS = [
@@ -493,17 +494,18 @@ const COMMON_FIELDS = [
 ];
 
 const GENRE_FIELDS = {
+  espionage:{section:'Espionage Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Cold War Espionage','Contemporary Intelligence','Cyber Espionage / Tech Thriller','Double Agent / Mole Hunt','Corporate Espionage','Covert Ops / Black Ops','Rogue Agent','Deep Cover / Sleeper','Political Assassination Plot','Counter-Terrorism']},
+    {id:'g_agency',label:'Organisation',type:'select',options:['CIA (US)','MI6 (British)','Mossad (Israeli)','FSB / SVR (Russian)','Fictional Agency','Private Intelligence Firm','Freelance / Rogue Operative','Multinational / NATO','Terrorist Cell POV','Unknown / Shadowy Entity']},
+    {id:'g_tradecraft',label:'Tradecraft Style',type:'select',options:['High-Tech Gadgets & Surveillance','Old-School Human Intelligence (HUMINT)','Psychological Manipulation','Deep Cover & Identity','Action-Forward (Jason Bourne Style)','Slow Burn Paranoia (le Carré Style)','Ensemble Team Operation','Solo Operative']},
+    {id:'g_loyalty',label:'Loyalty & Betrayal',type:'select',options:['Clear Patriotic Mission','Moral Ambiguity — Both Sides Flawed','Double Agent — True Allegiance Unknown','Defection Arc','Whistleblower / Conscience Crisis','Revenge Mission','Love Interest Compromises Mission','The Mission Was a Lie']},
+    {id:'g_tension',label:'Primary Tension',type:'range',min:1,max:10,def:8,minL:'Slow Burn Paranoia',maxL:'Non-Stop Action'},
+  ]},
   thriller:{section:'Thriller Specifics',fields:[
-    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Psychological Thriller','Legal Thriller','Political Conspiracy','Spy / Espionage','Medical Thriller','Domestic Thriller','Techno-Thriller','Crime Thriller','Eco-Thriller','Financial Thriller']},
-    {id:'g_threat',label:'Central Threat',type:'select',options:['Serial Killer','Terrorism','Kidnapping','Assassination','Blackmail','Identity Theft','Corporate Cover-Up','Government Conspiracy','Pandemic / Bioweapon','Stalker']},
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Psychological Thriller','Legal Thriller','Political Conspiracy','Medical Thriller','Domestic Thriller','Techno-Thriller','Crime Thriller','Eco-Thriller','Financial Thriller','Survival Thriller']},
+    {id:'g_threat',label:'Central Threat',type:'select',options:['Serial Killer','Terrorism','Kidnapping','Assassination','Blackmail','Identity Theft','Corporate Cover-Up','Government Conspiracy','Pandemic / Bioweapon','Stalker','Natural Disaster','Wrongful Accusation']},
     {id:'g_twist',label:'Twist Style',type:'select',options:['Protagonist Is the Killer','Villain Was the Hero All Along','It Was an Accident','Everyone Is Complicit','No Twist — Earned Reveal','Unreliable Memory','Twin / Double Identity','The Past Is Not What Was Told']},
     {id:'g_isolation',label:'Isolation Level',type:'range',min:1,max:10,def:5,minL:'Urban / Connected',maxL:'Completely Cut Off'},
-  ]},
-  romance:{section:'Romance Specifics',fields:[
-    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Contemporary Romance','Historical Romance','Paranormal Romance','Romantic Suspense','Sports Romance','Dark Romance','Second Chance','Forbidden Love','Small Town Romance','Billionaire Romance']},
-    {id:'g_trope',label:'Core Trope',type:'select',options:['Enemies to Lovers','Fake Dating','Forced Proximity','Second Chance','Grumpy / Sunshine',"Best Friend's Partner",'Forbidden Love','Bodyguard / Protector','Marriage of Convenience','Childhood Sweethearts','Slow Burn','Age Gap']},
-    {id:'g_heat',label:'Heat Level',type:'range',min:0,max:5,def:2,minL:'Sweet',maxL:'Scorching'},
-    {id:'g_hea',label:'Ending',type:'select',options:['HEA (Happily Ever After)','HFN (Happy For Now)','Bittersweet','Tragic / Open','Ambiguous']},
   ]},
   romcom:{section:'Romantic Comedy Specifics',fields:[
     {id:'g_sub',label:'Sub-Genre',type:'select',options:['Classic Hollywood (Meet-Cute, Chaos, Resolution)','Workplace Rom-Com','Travel / Fish Out of Water','Mistaken Identity / Impersonation','Rival-to-Lovers Competition','Holiday / Seasonal Rom-Com','Fake Relationship Gone Real','Social Media / Modern Dating','Multicultural / Cross-Cultural','Later-in-Life / Second Act','Friend Group Crossover','Nerdy / Genre-Savvy (Self-Aware)']},
@@ -512,11 +514,24 @@ const GENRE_FIELDS = {
     {id:'g_obstacle',label:'Central Obstacle',type:'select',options:["Misunderstanding That Won't Resolve",'Competing Ambitions / Careers','Family Disapproval','Old Flame Re-enters','One Is Leaving Town / Country','One Is Technically Unavailable','Class / Social World Gap','They Made a Bet That Complicates Everything','Deep-Seated Fear of Commitment','Past Trauma Resurfaces at Worst Moment']},
     {id:'g_gesture',label:'Third-Act Grand Gesture',type:'select',options:['Airport / Station Chase','Public Declaration (Speech / Sign / Mic Drop)','Showing Up in the Rain','The Letter They Were Never Meant to Hear','Abandoning Something Huge for Them','Letting Them Go (Selfless Exit)','No Grand Gesture — Quiet Honest Conversation','Both Stubborn — Comedic Collision']},
   ]},
+  romance:{section:'Romance Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Contemporary Romance','Historical Romance','Paranormal Romance','Romantic Suspense','Sports Romance','Dark Romance','Second Chance','Forbidden Love','Small Town Romance','Billionaire Romance','Military Romance','Workplace Romance']},
+    {id:'g_trope',label:'Core Trope',type:'select',options:['Enemies to Lovers','Fake Dating','Forced Proximity','Second Chance','Grumpy / Sunshine',"Best Friend's Partner",'Forbidden Love','Bodyguard / Protector','Marriage of Convenience','Childhood Sweethearts','Slow Burn','Age Gap','Brother's Best Friend','Reverse Harem']},
+    {id:'g_heat',label:'Heat Level',type:'range',min:0,max:5,def:2,minL:'Sweet / Clean',maxL:'Scorching / Explicit'},
+    {id:'g_hea',label:'Ending',type:'select',options:['HEA (Happily Ever After)','HFN (Happy For Now)','Bittersweet','Tragic / Open','Ambiguous']},
+  ]},
+  romantasy:{section:'Romantasy Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Court Intrigue & Fae Romance','Dark Fantasy Romance','Dragon Rider Romance','Enemies-to-Lovers Epic Fantasy','Slow Burn Magic Academy','Gods & Mortals','Chosen One Romance','Villain / Anti-Hero Romance','Portal Fantasy Romance','Arranged Marriage in a Fantasy Kingdom']},
+    {id:'g_magic',label:'Magic System',type:'select',options:['Hard Rules — Defined Costs & Limits','Soft — Mysterious & Unpredictable','Blood Magic','Elemental','Fae / Courtly Magic','Soul Bond / Mate Bond Magic','Forbidden / Stolen Power','Rare Gift (Few Users)','Magic Tied to Emotion or Love','Dark / Corrupting Magic']},
+    {id:'g_heat',label:'Heat Level',type:'range',min:0,max:5,def:3,minL:'Sweet / Slow Burn',maxL:'Scorching / Explicit'},
+    {id:'g_trope',label:'Core Romance Trope',type:'select',options:['Enemies to Lovers','Forced Proximity (Imprisoned / Questing Together)','Fake Alliance Gone Real','Fated Mates / Soul Bond','Forbidden (Different Factions / Species)','Grumpy Immortal / Sunshine Mortal','Slow Burn Across Multiple Books','Villain Redemption Arc Romance']},
+    {id:'g_politics',label:'Political Intrigue',type:'range',min:0,max:10,def:6,minL:'Pure Romance Focus',maxL:'Complex Court Politics'},
+  ]},
   fantasy:{section:'Fantasy Specifics',fields:[
-    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Epic / High Fantasy','Grimdark','Cozy Fantasy','Urban Fantasy','Dark Fantasy','Portal Fantasy','Mythological Retelling','Low Fantasy (Minimal Magic)','Progression / LitRPG','Flintlock / Gunpowder Fantasy','Romantic Fantasy','Fairy Tale Retelling']},
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Epic / High Fantasy','Grimdark','Cozy Fantasy','Urban Fantasy','Dark Fantasy','Portal Fantasy','Mythological Retelling','Low Fantasy (Minimal Magic)','Progression / LitRPG','Flintlock / Gunpowder Fantasy','Fairy Tale Retelling','Sword & Sorcery']},
     {id:'g_magic',label:'Magic System',type:'select',options:['Hard Rules — Defined Costs & Limits','Soft — Mysterious & Unpredictable','Blood Magic','Elemental','Word / Language Based','Technology-Mimicking','Bound to Emotion','Borrowed / Stolen Power','Rare Gift (Few Users)','Universal (Anyone Can Learn)','No Magic System']},
     {id:'g_politics',label:'Political Intrigue',type:'range',min:0,max:10,def:5,minL:'None',maxL:'Game of Thrones Level'},
-    {id:'g_chosen',label:'Chosen One Trope',type:'select',options:['Classic Chosen One','Subverted — They\'re Wrong','Deconstructed','Multiple Chosen Ones','No Chosen One — Earned Heroism','The Villain Is the Chosen One']},
+    {id:'g_chosen',label:'Chosen One Trope',type:'select',options:['Classic Chosen One','Subverted — They're Wrong','Deconstructed','Multiple Chosen Ones','No Chosen One — Earned Heroism','The Villain Is the Chosen One']},
   ]},
   scifi:{section:'Sci-Fi Specifics',fields:[
     {id:'g_sub',label:'Sub-Genre',type:'select',options:['Hard Sci-Fi (Science-Forward)','Space Opera','Cyberpunk','Solarpunk','Biopunk','Military Sci-Fi','Cli-Fi (Climate Fiction)','First Contact','Generation Ship','Time Travel','Dystopian','Post-Human / Transhuman','AI Uprising']},
@@ -536,29 +551,23 @@ const GENRE_FIELDS = {
     {id:'g_detective',label:'Investigator',type:'select',options:['Police Detective (Mainstream)','Maverick / Rogue Cop','Private Investigator','Amateur (No Training)','Forensic Specialist','Journalist / Reporter','Lawyer','Criminal Turned Informant','Paranormal Investigator','Victim Investigating Own Case']},
     {id:'g_herrings',label:'Red Herring Density',type:'range',min:1,max:10,def:5,minL:'Few — Lean Puzzle',maxL:'Dense — Many Suspects'},
   ]},
-  historical:{section:'Historical Fiction Specifics',fields:[
-    {id:'g_era',label:'Historical Era',type:'select',options:['Ancient (Pre-500 AD)','Medieval (500–1400)','Renaissance / Early Modern (1400–1700)','Georgian / Regency (1700–1820)','Victorian (1820–1900)','Edwardian / WWI Era (1900–1920)','Interwar / WWII (1920–1945)','Post-War / Cold War (1945–1980)','Late 20th Century (1980–2000)']},
-    {id:'g_region',label:'Region / Culture',type:'select',options:['British Isles','Continental Europe','North America','Latin America','Middle East / Ottoman Empire','Sub-Saharan Africa','East Asia','South Asia','Pacific / Oceania','Ancient Mediterranean','Colonial / Empire Intersection']},
-    {id:'g_real',label:'Real Historical Figures',type:'select',options:['No real figures — purely fictional','Background/minor real figures only','Major real figures as supporting characters','Real figure as protagonist']},
-    {id:'g_accuracy',label:'Historical Accuracy',type:'range',min:1,max:10,def:7,minL:'Loose Inspiration',maxL:'Rigorous Research'},
-  ]},
-  literary:{section:'Literary Fiction Specifics',fields:[
-    {id:'g_sub',label:'Style',type:'select',options:['Classic Realism','Stream of Consciousness','Postmodern / Metafiction','Minimalist Prose','Maximalist / Baroque','Magic Realism','Autofiction / Personal Essay Novel','Experimental Form','Lyrical / Poetic Prose','Satirical / Ironic']},
-    {id:'g_interiority',label:'Interiority Level',type:'range',min:1,max:10,def:8,minL:'Plot-Driven',maxL:'Pure Interior Life'},
-    {id:'g_resolution',label:'Resolution Style',type:'select',options:['No Resolution — Life Continues','Ambiguous / Open Ending','Transformation Without Triumph','Pyrrhic Victory','Full Resolution','Circular / Returns to Beginning','Death / Tragic End']},
-    {id:'g_intertextuality',label:'Intertextuality',type:'select',options:['None','Subtle Allusion','Explicit Literary References','Retelling / Reimagining of a Classic','Dialogue Across Multiple Texts']},
-  ]},
   crime:{section:'Crime Fiction Specifics',fields:[
     {id:'g_sub',label:'Sub-Genre',type:'select',options:['Organised Crime / Mob','Heist / Caper','White Collar Crime','Drug Trade / Cartel','True Crime Style Fiction','Gang / Street Crime','Art / Antiquities Crime','Political Crime','Serial Offender Procedural','Vigilante Justice']},
     {id:'g_pov_side',label:'Narrative Perspective',type:'select',options:['Detective / Law Enforcement POV','Criminal POV','Victim POV','Journalist / Outsider POV','Both Sides Alternating','Omniscient Observer']},
     {id:'g_morality',label:'Justice Outcome',type:'select',options:['Criminal Caught — Justice Served','Criminal Escapes — Critique of System','Ambiguous — No Clear Resolution','Vigilante Justice Prevails','Systemic Corruption Exposed','Tragic — Everyone Loses']},
     {id:'g_grit',label:'Grit Level',type:'range',min:1,max:10,def:6,minL:'Polished / Stylised',maxL:'Raw / Unflinching'},
   ]},
-  western:{section:'Western Specifics',fields:[
-    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Classic Frontier Western','Revisionist / Subversive Western','Weird West (Supernatural Elements)','Indigenous Perspective Western','Civil War / Post-War Western','Border / Outlaw Western','Neo-Western (Modern Setting)','Women of the West','Railroad / Expansion West','Outlaw Biography Style']},
-    {id:'g_landscape',label:'Landscape Role',type:'select',options:['Backdrop Only','Atmospheric Presence','Active Antagonist Force','Character in Itself','Mythologised / Symbolic','Realistic / Harsh Survival']},
-    {id:'g_law',label:'Law vs. Outlawry',type:'range',min:0,max:10,def:5,minL:'Law Always Wins',maxL:'Outlaws Are Heroes'},
-    {id:'g_mythology',label:'Western Mythology Level',type:'range',min:1,max:10,def:5,minL:'Demythologised / Gritty',maxL:'Heightened / Legendary'},
+  historical:{section:'Historical Fiction Specifics',fields:[
+    {id:'g_era',label:'Historical Era',type:'select',options:['Ancient (Pre-500 AD)','Medieval (500–1400)','Renaissance / Early Modern (1400–1700)','Georgian / Regency (1700–1820)','Victorian (1820–1900)','Edwardian / WWI Era (1900–1920)','Interwar / WWII (1920–1945)','Post-War / Cold War (1945–1980)','Late 20th Century (1980–2000)']},
+    {id:'g_region',label:'Region / Culture',type:'select',options:['British Isles','Continental Europe','North America','Latin America','Middle East / Ottoman Empire','Sub-Saharan Africa','East Asia','South Asia','Pacific / Oceania','Ancient Mediterranean','Colonial / Empire Intersection']},
+    {id:'g_real',label:'Real Historical Figures',type:'select',options:['No real figures — purely fictional','Background/minor real figures only','Major real figures as supporting characters','Real figure as protagonist']},
+    {id:'g_accuracy',label:'Historical Accuracy',type:'range',min:1,max:10,def:7,minL:'Loose Inspiration',maxL:'Rigorous Research'},
+  ]},
+  ya:{section:'Young Adult Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['YA Contemporary','YA Fantasy','YA Dystopian / Sci-Fi','YA Romance','YA Thriller / Mystery','YA Historical Fiction','YA Horror','YA Paranormal','YA Sports','YA Issue-Driven (Own Voices)','YA Adventure / Quest']},
+    {id:'g_stakes',label:'Personal vs World Stakes',type:'range',min:1,max:10,def:6,minL:'Deeply Personal / Internal',maxL:'Save-the-World Epic'},
+    {id:'g_coming_of_age',label:'Coming-of-Age Focus',type:'select',options:['Identity & Self-Discovery','First Love / Heartbreak','Family Conflict & Independence','Grief & Loss','Mental Health Journey','Social Pressure & Belonging','Political Awakening','Finding Voice & Power','Leaving Home / Growing Up','Confronting Trauma']},
+    {id:'g_tone_ya',label:'Tone',type:'select',options:['Hopeful & Empowering','Dark & Unflinching','Funny & Relatable','Romantic & Swoony','Action-Packed & Propulsive','Emotional & Tearjerking','Thoughtful & Quiet','Magical & Wondrous']},
   ]},
   childrens:{section:"Children's Fiction Specifics",fields:[
     {id:'g_age',label:'Age Range',type:'select',options:["Picture Book (0–5)",'Early Reader (5–7)','Chapter Book (6–9)','Middle Grade (8–12)','Upper Middle Grade / YA Bridge (10–14)']},
@@ -568,10 +577,11 @@ const GENRE_FIELDS = {
   ]},
 };
 
+
 // ══════════════════════════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════════════════════════
-let activeGenre = 'thriller';
+let activeGenre = 'espionage';
 let tabooState  = {};         // option -> bool
 let tabooDefaults = new Set(['Trauma & PTSD','Addiction','Mental Illness']);
 let selectedWC = 'novel';
@@ -1001,17 +1011,18 @@ function buildAIPrompt(p, seriesData, bookNum, totalBooks) {
 
   let genreSpecific = '';
   const g = genre.id;
-  if (g==='thriller') genreSpecific = `Sub-genre: ${gVals.g_sub}. Threat: ${gVals.g_threat}. Twist: ${gVals.g_twist}.`;
-  else if (g==='romance') genreSpecific = `Sub-genre: ${gVals.g_sub}. Trope: ${gVals.g_trope}. Heat: ${gVals.g_heat}/5. Ending: ${gVals.g_hea}.`;
+  if (g==='espionage') genreSpecific = `Sub-genre: ${gVals.g_sub}. Agency: ${gVals.g_agency}. Tradecraft: ${gVals.g_tradecraft}. Loyalty dynamic: ${gVals.g_loyalty}. Tension level: ${gVals.g_tension}/10.`;
+  else if (g==='thriller') genreSpecific = `Sub-genre: ${gVals.g_sub}. Threat: ${gVals.g_threat}. Twist: ${gVals.g_twist}.`;
   else if (g==='romcom') genreSpecific = `Sub-genre: ${gVals.g_sub}. Meet-cute: ${gVals.g_meetcute}. Comedy style: ${gVals.g_comedy}. Obstacle: ${gVals.g_obstacle}. Grand gesture: ${gVals.g_gesture}.`;
+  else if (g==='romance') genreSpecific = `Sub-genre: ${gVals.g_sub}. Trope: ${gVals.g_trope}. Heat: ${gVals.g_heat}/5. Ending: ${gVals.g_hea}.`;
+  else if (g==='romantasy') genreSpecific = `Sub-genre: ${gVals.g_sub}. Magic: ${gVals.g_magic}. Heat: ${gVals.g_heat}/5. Romance trope: ${gVals.g_trope}. Political intrigue: ${gVals.g_politics}/10.`;
   else if (g==='fantasy') genreSpecific = `Sub-genre: ${gVals.g_sub}. Magic system: ${gVals.g_magic}. Political intrigue: ${gVals.g_politics}/10. Chosen one: ${gVals.g_chosen}.`;
   else if (g==='scifi') genreSpecific = `Sub-genre: ${gVals.g_sub}. Tech level: ${gVals.g_tech}/10. Concept: ${gVals.g_concept}. Optimism: ${gVals.g_optimism}/10.`;
   else if (g==='horror') genreSpecific = `Sub-genre: ${gVals.g_sub}. Threat: ${gVals.g_monster}. Gore: ${gVals.g_gore}/10. Survival odds: ${gVals.g_survival}.`;
   else if (g==='mystery') genreSpecific = `Sub-genre: ${gVals.g_sub}. Crime: ${gVals.g_crime}. Investigator: ${gVals.g_detective}. Red herrings: ${gVals.g_herrings}/10.`;
-  else if (g==='historical') genreSpecific = `Era: ${gVals.g_era}. Region: ${gVals.g_region}. Real figures: ${gVals.g_real}. Accuracy: ${gVals.g_accuracy}/10.`;
-  else if (g==='literary') genreSpecific = `Style: ${gVals.g_sub}. Interiority: ${gVals.g_interiority}/10. Resolution: ${gVals.g_resolution}.`;
   else if (g==='crime') genreSpecific = `Sub-genre: ${gVals.g_sub}. POV side: ${gVals.g_pov_side}. Justice outcome: ${gVals.g_morality}. Grit: ${gVals.g_grit}/10.`;
-  else if (g==='western') genreSpecific = `Sub-genre: ${gVals.g_sub}. Landscape: ${gVals.g_landscape}. Law vs outlawry: ${gVals.g_law}/10.`;
+  else if (g==='historical') genreSpecific = `Era: ${gVals.g_era}. Region: ${gVals.g_region}. Real figures: ${gVals.g_real}. Accuracy: ${gVals.g_accuracy}/10.`;
+  else if (g==='ya') genreSpecific = `Sub-genre: ${gVals.g_sub}. Coming-of-age focus: ${gVals.g_coming_of_age}. Stakes: ${gVals.g_stakes}/10. Tone: ${gVals.g_tone_ya}.`;
   else if (g==='childrens') genreSpecific = `Age range: ${gVals.g_age}. Sub-genre: ${gVals.g_sub}. Core lesson: ${gVals.g_lesson}. Whimsy: ${gVals.g_whimsy}/10.`;
 
   let seriesContext = '';
@@ -1086,18 +1097,19 @@ function buildFallbackBlurb(p, seriesData, bookNum, totalBooks) {
 //  RENDER CARD
 // ══════════════════════════════════════════════════════════
 const TITLE_STARTS = {
+  espionage:['The Last Agent','Before the Handler','Cover of','Dead Drop','The Moscow','No Safe House','Operation','The Defector','Eyes Only','The Sleeper'],
   thriller:['The Last','Before the','The Silent','Behind Closed','No Way Out','The Final'],
-  romance:['When We','Before I','Everything About','The Way You','Always and'],
-  romcom:['Accidentally','The Wrong','Technically Speaking','Against All','Somehow'],
-  fantasy:['The Age of','Crown of','Shadows and','The Last','Of Blood and'],
-  scifi:['After the','The Long','Signal from','End of','The Memory of'],
-  horror:['In the Dark of','What Waits','The Hollow','Before You Wake','Where They'],
-  mystery:['The Case of','No One Saw','The Last Known','What the Dead','Evidence of'],
-  historical:['The Year of','Before the Storm','The Last Season of','Letters from','A Season in'],
-  literary:['The Shape of','Everything After','Notes on','The Weight of','A Kind of'],
-  crime:['The Price of','No Clean Hands','The Debt','Before the Law','Dirty'],
-  western:['Dust and','The Last Gun in','No Country','Desert Law','The Gunman of'],
-  childrens:['The Amazing','One Day in','The Mystery of','Adventures of','Max and the'],
+  romcom:['Accidentally','The Wrong','Technically Speaking','Against All','Somehow','Not Exactly'],
+  romance:['When We','Before I','Everything About','The Way You','Always and','One More'],
+  romantasy:['A Court of','The Blood and','Crown of Thorns and','Daughter of','When Stars and','The Fae Prince of','Shadow and'],
+  fantasy:['The Age of','Crown of','Shadows and','The Last','Of Blood and','The Blade of'],
+  scifi:['After the','The Long','Signal from','End of','The Memory of','When Earth'],
+  horror:['In the Dark of','What Waits','The Hollow','Before You Wake','Where They','The Rot Beneath'],
+  mystery:['The Case of','No One Saw','The Last Known','What the Dead','Evidence of','The Body at'],
+  crime:['The Price of','No Clean Hands','The Debt','Before the Law','Dirty','The Score'],
+  historical:['The Year of','Before the Storm','The Last Season of','Letters from','A Season in','The King's'],
+  ya:['The Girl Who','After Everything','I Was Never','We Were','Before I Knew','The Last Year of'],
+  childrens:['The Amazing','One Day in','The Mystery of','Adventures of','Max and the','Pip and the'],
 };
 const BOOK_SFXS = ['',': The Beginning',': Rising',': The Reckoning',': Aftermath',': Into the Dark',': New Blood',': The Last Stand',': Endgame',': Rebirth',': The Turning',': Beyond'];
 
