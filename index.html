@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Idea Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1a1008;--paper:#f5ede0;--cream:#ede0cc;--accent:#b5451b;--gold:#c9943a;--muted:#7a6a58;--light:#faf4ec;--border:#c8b89a;--sa:#3a6bb5;--sl:#eef3fc;--green:#2a7a4a;--greenl:#edf7f1;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'DM Mono',monospace;min-height:100vh;background-image:radial-gradient(ellipse at 20% 0%,rgba(181,69,27,.07) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(201,148,58,.07) 0%,transparent 60%);}
+header{text-align:center;padding:2.5rem 2rem 1.5rem;position:relative;}
+header::after{content:'';display:block;width:80px;height:3px;background:linear-gradient(90deg,var(--accent),var(--gold));margin:1.2rem auto 0;border-radius:2px;}
+.eyebrow{font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem;}
+h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.05;color:var(--ink);}
+h1 em{font-style:italic;color:var(--accent);}
+.subtitle{margin-top:.7rem;font-size:.75rem;color:var(--muted);letter-spacing:.04em;}
+.toolbar{max-width:980px;margin:0 auto;padding:.75rem 2rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--border);}
+.tb-btn{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.38rem .9rem;border:1.5px solid var(--border);background:var(--light);color:var(--muted);cursor:pointer;border-radius:2px;transition:all .15s;white-space:nowrap;}
+.tb-btn:hover{border-color:var(--accent);color:var(--accent);}
+.tb-btn.green{border-color:var(--green);color:var(--green);}
+.tb-btn.green:hover{background:var(--green);color:#fff;}
+.tb-btn.gold{border-color:var(--gold);color:var(--gold);}
+.tb-btn.gold:hover{background:var(--gold);color:#fff;}
+.tb-sep{flex:1;}
+.genre-tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;padding:1.2rem 2rem;max-width:980px;margin:0 auto;}
+.genre-tab{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.45rem 1rem;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:2px;transition:all .18s;}
+.genre-tab:hover{border-color:var(--accent);color:var(--accent);}
+.genre-tab.active{background:var(--accent);border-color:var(--accent);color:var(--light);font-weight:500;}
+.form-wrap{max-width:980px;margin:0 auto;padding:0 2rem 2rem;}
+.section-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:.9rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
+.fields-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.1rem;margin-bottom:1.8rem;}
+.field-group{display:flex;flex-direction:column;gap:.35rem;}
+label{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+select,input[type=text],input[type=range]{width:100%;font-family:'DM Mono',monospace;font-size:.76rem;}
+select{appearance:none;-webkit-appearance:none;background:var(--light);border:1.5px solid var(--border);color:var(--ink);padding:.5rem 2rem .5rem .7rem;border-radius:2px;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a6a58' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;transition:border-color .15s;}
+select:focus{outline:none;border-color:var(--accent);}
+input[type=text]{background:var(--light);border:1.5px solid var(--border);padding:.5rem .7rem;border-radius:2px;color:var(--ink);}
+input[type=text]:focus{outline:none;border-color:var(--accent);}
+.range-wrap{display:flex;flex-direction:column;gap:.25rem;}
+.range-row{display:flex;align-items:center;gap:.6rem;}
+input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:var(--border);border-radius:2px;flex:1;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--light);box-shadow:0 1px 4px rgba(0,0,0,.18);}
+.range-val{font-size:.68rem;color:var(--accent);min-width:2rem;text-align:right;}
+.range-labels{display:flex;justify-content:space-between;font-size:.56rem;color:var(--muted);}
+.wc-selector{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.8rem;}
+.wc-card{flex:1;min-width:140px;border:1.5px solid var(--border);border-radius:3px;padding:.9rem 1rem;cursor:pointer;background:var(--light);transition:all .18s;position:relative;}
+.wc-card:hover{border-color:var(--gold);}
+.wc-card.active{border-color:var(--accent);background:#fdf5ed;box-shadow:0 2px 10px rgba(181,69,27,.1);}
+.wc-card.active::after{content:'✓';position:absolute;top:.5rem;right:.7rem;font-size:.65rem;color:var(--accent);}
+.wc-title{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:.15rem;}
+.wc-range{font-size:.58rem;color:var(--accent);letter-spacing:.06em;margin-bottom:.3rem;}
+.wc-desc{font-size:.58rem;color:var(--muted);line-height:1.5;}
+.taboo-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.4rem;}
+.taboo-actions{display:flex;gap:.35rem;flex-wrap:wrap;}
+.taboo-btn{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:.22rem .6rem;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:2px;transition:all .15s;}
+.taboo-btn:hover{border-color:var(--accent);color:var(--accent);}
+.taboo-btn.save-def{border-color:var(--gold);color:var(--gold);}
+.taboo-btn.save-def:hover{background:var(--gold);color:#fff;}
+.check-grid{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.8rem;}
+.check-pill{display:inline-flex;align-items:center;gap:.35rem;font-size:.65rem;letter-spacing:.05em;color:var(--muted);padding:.32rem .8rem;border:1.5px solid var(--border);border-radius:999px;cursor:pointer;transition:all .15s;user-select:none;background:var(--light);}
+.check-pill:hover{border-color:var(--gold);color:var(--ink);}
+.check-pill.on{background:var(--ink);border-color:var(--ink);color:var(--light);}
+.check-pill.is-def{box-shadow:0 0 0 2px var(--gold);}
+.author-panel{background:var(--greenl);border:1.5px solid #8ecbaa;border-left:4px solid var(--green);border-radius:3px;padding:1.2rem 1.6rem;margin-bottom:1.5rem;}
+.panel-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.panel-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--green);display:flex;align-items:center;gap:.5rem;}
+.panel-hint{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#5aaa7a;}
+.panel-body{display:none;margin-top:1rem;}
+.panel-body.open{display:block;}
+.author-fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.9rem;margin-bottom:.8rem;}
+.green-input{font-family:'DM Mono',monospace;font-size:.76rem;width:100%;padding:.46rem .7rem;border:1.5px solid #8ecbaa;border-radius:2px;background:#fff;color:var(--ink);}
+.green-input:focus{outline:none;border-color:var(--green);}
+.green-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--green);display:block;margin-bottom:.3rem;}
+.series-panel{background:var(--sl);border:1.5px solid #a8c0e8;border-left:4px solid var(--sa);border-radius:3px;padding:1.2rem 1.6rem;margin-bottom:1.5rem;}
+.series-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sa);display:block;margin-bottom:.3rem;}
+.series-input{font-family:'DM Mono',monospace;font-size:.76rem;width:100%;padding:.46rem .7rem;border:1.5px solid #a8c0e8;border-radius:2px;background:#fff;color:var(--ink);}
+.series-input:focus{outline:none;border-color:var(--sa);}
+.series-fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.9rem;margin-bottom:1rem;}
+.toggle-switch{position:relative;width:42px;height:22px;flex-shrink:0;}
+.toggle-switch input{display:none;}
+.toggle-track{position:absolute;inset:0;background:var(--border);border-radius:999px;cursor:pointer;transition:background .2s;}
+.toggle-switch input:checked+.toggle-track{background:var(--sa);}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:left .2s;pointer-events:none;}
+.toggle-switch input:checked~.toggle-thumb{left:23px;}
+.toggle-row{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;}
+.toggle-label{font-size:.73rem;color:var(--sa);}
+.series-config{display:none;}
+.series-config.open{display:block;}
+.char-list{display:flex;flex-direction:column;gap:.65rem;}
+.char-card{background:#fff;border:1.5px solid #a8c0e8;border-radius:3px;padding:.8rem .9rem;animation:fadeUp .2s ease;}
+.char-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;align-items:end;margin-bottom:.5rem;}
+.char-arc-row{display:grid;grid-template-columns:1fr;gap:.5rem;}
+.btn-rem{font-size:.75rem;width:26px;height:26px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:2px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.btn-rem:hover{border-color:var(--accent);color:var(--accent);}
+.btn-add-char{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.28rem .75rem;border:1.5px solid var(--sa);background:transparent;color:var(--sa);cursor:pointer;border-radius:2px;transition:all .15s;}
+.btn-add-char:hover{background:var(--sa);color:#fff;}
+.book-count-row{display:flex;align-items:center;gap:1rem;margin-top:1rem;padding-top:.9rem;border-top:1px dashed #a8c0e8;}
+.btn-cnt{font-size:.9rem;width:30px;height:30px;border:1.5px solid #a8c0e8;background:#fff;color:var(--sa);cursor:pointer;border-radius:2px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.btn-cnt:hover{background:var(--sa);color:#fff;}
+.cnt-display{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--sa);min-width:2.2rem;text-align:center;}
+.presets-panel{background:#f8f5ff;border:1.5px solid #c4b0e8;border-left:4px solid #7a4bb5;border-radius:3px;padding:1.2rem 1.6rem;margin-bottom:1.5rem;}
+.preset-grid{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem;}
+.preset-chip{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.06em;padding:.32rem .8rem;border:1.5px solid #c4b0e8;border-radius:999px;cursor:pointer;background:#fff;color:#7a4bb5;transition:all .15s;display:flex;align-items:center;gap:.4rem;}
+.preset-chip:hover{background:#7a4bb5;color:#fff;border-color:#7a4bb5;}
+.preset-chip .del-chip{margin-left:.2rem;opacity:.5;font-size:.75rem;}
+.preset-chip .del-chip:hover{opacity:1;}
+.preset-name-input{font-family:'DM Mono',monospace;font-size:.73rem;padding:.4rem .7rem;border:1.5px solid #c4b0e8;border-radius:2px;background:#fff;color:var(--ink);}
+.preset-name-input:focus{outline:none;border-color:#7a4bb5;}
+.action-row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-top:1.8rem;}
+.btn-generate{font-family:'Playfair Display',serif;font-size:1rem;font-style:italic;font-weight:700;color:var(--light);background:var(--accent);border:none;border-radius:3px;cursor:pointer;padding:.9rem 2rem;transition:background .18s,transform .12s;box-shadow:0 4px 16px rgba(181,69,27,.25);}
+.btn-generate:hover{background:#9e3a15;transform:translateY(-1px);}
+.btn-generate:active{transform:translateY(0);}
+.btn-random{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.5rem 1.1rem;border:1.5px solid var(--gold);background:transparent;color:var(--gold);cursor:pointer;border-radius:2px;transition:all .15s;}
+.btn-random:hover{background:var(--gold);color:#fff;}
+#output{max-width:980px;margin:0 auto 4rem;padding:0 2rem;display:none;}
+.output-card{background:var(--light);border:1.5px solid var(--border);border-left:4px solid var(--accent);border-radius:3px;padding:2rem 2.2rem;position:relative;box-shadow:0 6px 28px rgba(0,0,0,.07);margin-bottom:1.4rem;}
+.output-card::before{content:'✦';position:absolute;top:-.6rem;left:1.8rem;font-size:1rem;color:var(--accent);background:var(--light);padding:0 .3rem;}
+.output-card.s-card{border-left-color:var(--sa);}
+.output-card.s-card::before{color:var(--sa);}
+.out-badges{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem;}
+.out-badge{display:inline-block;font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;padding:.18rem .55rem;border-radius:1px;border:1px solid;}
+.out-badge.genre{color:var(--accent);border-color:var(--accent);}
+.out-badge.booknum{color:var(--sa);border-color:var(--sa);}
+.out-badge.author{color:var(--green);border-color:var(--green);}
+.out-title{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;line-height:1.2;margin-bottom:1rem;color:var(--ink);}
+.out-blurb{font-size:.8rem;line-height:1.85;color:var(--muted);margin-bottom:1.2rem;border-top:1px dashed var(--border);padding-top:.9rem;white-space:pre-wrap;}
+.out-chars{font-size:.73rem;line-height:1.7;color:var(--sa);background:var(--sl);border:1px solid #a8c0e8;border-radius:2px;padding:.7rem .9rem;margin-bottom:.9rem;}
+.out-chars strong{display:block;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.25rem;}
+.out-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1.2rem;}
+.tag{font-size:.6rem;letter-spacing:.06em;color:var(--muted);background:var(--cream);padding:.18rem .55rem;border-radius:1px;border:1px solid var(--border);}
+.out-actions{display:flex;gap:.5rem;flex-wrap:wrap;}
+.btn-act{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);background:transparent;padding:.35rem .85rem;cursor:pointer;border-radius:2px;transition:all .15s;}
+.btn-act:hover{color:var(--accent);border-color:var(--accent);}
+.btn-act.pdf-btn:hover{color:var(--green);border-color:var(--green);}
+.series-out-header{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--sa);margin-bottom:.8rem;padding-bottom:.45rem;border-bottom:2px solid #a8c0e8;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
+.ai-loading{text-align:center;padding:2rem;font-size:.75rem;color:var(--muted);letter-spacing:.06em;}
+.ai-loading .spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:.8rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ai-error{background:#fff0ee;border:1px solid #e8b0a8;border-radius:3px;padding:1rem 1.2rem;font-size:.75rem;color:#a03020;margin-top:.8rem;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.hidden{display:none;}
+.modal{background:var(--light);border-radius:4px;padding:2rem;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative;}
+.modal h2{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:1rem;}
+.modal-close{position:absolute;top:.9rem;right:1rem;font-size:1.1rem;cursor:pointer;color:var(--muted);background:none;border:none;}
+.modal input,.modal select{margin-bottom:.8rem;}
+.modal-actions{display:flex;gap:.5rem;justify-content:flex-end;margin-top:.5rem;}
+.btn-modal-save{font-family:'Playfair Display',serif;font-style:italic;font-size:.95rem;padding:.5rem 1.4rem;background:var(--accent);color:#fff;border:none;border-radius:2px;cursor:pointer;}
+.btn-modal-cancel{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;padding:.5rem 1rem;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;border-radius:2px;}
+.api-note{background:#fff8e8;border:1px solid #e8d090;border-radius:3px;padding:.7rem 1rem;font-size:.68rem;color:#806020;line-height:1.6;margin-bottom:1rem;}
+.api-note a{color:#b5451b;}
+@media(max-width:600px){.fields-grid{grid-template-columns:1fr;}.output-card{padding:1.4rem;}.char-row{grid-template-columns:1fr 1fr;}.wc-card{min-width:100%;}}
+.fade-in{animation:fadeUp .35s ease forwards;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+/* ── DEVELOP THIS BOOK ── */
+.develop-panel{max-width:980px;margin:0 auto 3rem;padding:0 2rem;}
+.develop-card{background:linear-gradient(135deg,#1a1008 0%,#2d1f0e 100%);border-radius:4px;padding:2rem 2.4rem;box-shadow:0 8px 40px rgba(0,0,0,.2);}
+.develop-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.6rem;flex-wrap:wrap;gap:.8rem;}
+.develop-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#f5ede0;display:flex;align-items:center;gap:.6rem;}
+.develop-subtitle{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#c9943a;margin-top:.2rem;}
+.develop-book-label{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#7a9acc;background:rgba(58,107,181,.15);border:1px solid rgba(58,107,181,.3);padding:.25rem .7rem;border-radius:999px;}
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.9rem;margin-bottom:1.5rem;}
+.doc-btn{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;padding:.85rem 1rem;border:1.5px solid rgba(200,184,154,.25);background:rgba(250,244,236,.05);color:#c8b89a;cursor:pointer;border-radius:3px;transition:all .18s;text-align:left;position:relative;overflow:hidden;}
+.doc-btn:hover{border-color:var(--gold);background:rgba(201,148,58,.12);color:#f5ede0;transform:translateY(-1px);}
+.doc-btn:active{transform:translateY(0);}
+.doc-btn.running{border-color:#7a9acc;color:#7a9acc;cursor:wait;}
+.doc-btn.done{border-color:#5aaa7a;color:#5aaa7a;}
+.doc-btn .doc-icon{display:block;font-size:1.1rem;margin-bottom:.4rem;}
+.doc-btn .doc-label{display:block;font-weight:500;margin-bottom:.15rem;}
+.doc-btn .doc-desc{display:block;font-size:.55rem;letter-spacing:.04em;opacity:.65;line-height:1.4;text-transform:none;}
+.doc-output-area{margin-top:1.2rem;}
+.doc-result{background:rgba(250,244,236,.06);border:1.5px solid rgba(200,184,154,.2);border-radius:3px;padding:1.4rem 1.6rem;margin-bottom:1rem;animation:fadeUp .3s ease;}
+.doc-result-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem;}
+.doc-result-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#f5ede0;display:flex;align-items:center;gap:.5rem;}
+.doc-result-actions{display:flex;gap:.4rem;}
+.doc-act-btn{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.28rem .7rem;border:1px solid rgba(200,184,154,.3);background:transparent;color:#c8b89a;cursor:pointer;border-radius:2px;transition:all .15s;}
+.doc-act-btn:hover{border-color:var(--gold);color:var(--gold);}
+.doc-act-btn.pdf-act:hover{border-color:#5aaa7a;color:#5aaa7a;}
+.doc-content{font-size:.79rem;line-height:1.85;color:#c8b89a;white-space:pre-wrap;}
+.doc-content h3{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#f5ede0;margin:1.1rem 0 .4rem;}
+.doc-content h4{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin:.9rem 0 .3rem;}
+.doc-content strong{color:#f5ede0;}
+.doc-content em{color:var(--gold);font-style:normal;}
+.doc-loading{text-align:center;padding:1.5rem;color:#7a6a58;font-size:.72rem;letter-spacing:.06em;}
+.doc-loading .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(200,184,154,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin-right:.5rem;vertical-align:middle;}
+.develop-gen-all{font-family:'Playfair Display',serif;font-size:.9rem;font-style:italic;font-weight:700;padding:.6rem 1.4rem;border:1.5px solid var(--gold);background:rgba(201,148,58,.15);color:var(--gold);cursor:pointer;border-radius:3px;transition:all .18s;white-space:nowrap;}
+.develop-gen-all:hover{background:var(--gold);color:#1a1008;}
+.develop-gen-all:disabled{opacity:.45;cursor:wait;}
+.develop-gen-all.running{border-color:#7a9acc;color:#7a9acc;background:rgba(58,107,181,.1);}
+.develop-copy-all{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.42rem 1rem;border:1px solid rgba(200,184,154,.25);background:transparent;color:#c8b89a;cursor:pointer;border-radius:2px;transition:all .15s;}
+.develop-copy-all:hover{border-color:var(--gold);color:var(--gold);}
+.develop-export-pdf{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.42rem 1rem;border:1px solid rgba(90,170,122,.35);background:transparent;color:#5aaa7a;cursor:pointer;border-radius:2px;transition:all .15s;}
+.develop-export-pdf:hover{background:rgba(90,170,122,.12);}
+/* ── DEVELOP THIS SERIES ── */
+.develop-series-btn{font-family:'Playfair Display',serif;font-size:.9rem;font-style:italic;font-weight:700;padding:.6rem 1.4rem;border:1.5px solid #7a9acc;background:rgba(58,107,181,.15);color:#7a9acc;cursor:pointer;border-radius:3px;transition:all .18s;white-space:nowrap;}
+.develop-series-btn:hover{background:var(--sa);color:#fff;border-color:var(--sa);}
+.develop-series-btn:disabled{opacity:.45;cursor:wait;}
+.series-book-tab{display:inline-flex;align-items:center;gap:.4rem;font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;padding:.32rem .85rem;border:1.5px solid rgba(200,184,154,.25);background:rgba(250,244,236,.04);color:#7a9acc;cursor:pointer;border-radius:2px;transition:all .15s;}
+.series-book-tab:hover,.series-book-tab.active{border-color:#7a9acc;background:rgba(58,107,181,.18);color:#c8d8f0;}
+.series-book-tab.done{border-color:#5aaa7a;color:#5aaa7a;}
+.series-tab-bar{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.2rem;padding-bottom:.9rem;border-bottom:1px solid rgba(200,184,154,.15);}
+/* ── CLOUD EXPORT MODAL ── */
+.cloud-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.cloud-modal-overlay.hidden{display:none;}
+.cloud-modal{background:#1e1610;border:1.5px solid rgba(200,184,154,.25);border-radius:4px;padding:2rem;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;}
+.cloud-modal h2{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:#f5ede0;margin-bottom:.4rem;}
+.cloud-modal-sub{font-size:.68rem;color:#7a6a58;margin-bottom:1.4rem;line-height:1.6;}
+.cloud-modal-close{position:absolute;top:.9rem;right:1rem;font-size:1rem;cursor:pointer;color:#7a6a58;background:none;border:none;}
+.cloud-modal-close:hover{color:#c8b89a;}
+.cloud-provider-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.2rem;}
+.cloud-provider-btn{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;padding:1rem .8rem;border:1.5px solid rgba(200,184,154,.2);background:rgba(250,244,236,.04);color:#c8b89a;cursor:pointer;border-radius:3px;transition:all .18s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.5rem;}
+.cloud-provider-btn:hover{border-color:var(--gold);background:rgba(201,148,58,.1);color:#f5ede0;}
+.cloud-provider-btn .provider-icon{font-size:1.6rem;}
+.cloud-provider-btn .provider-name{font-weight:500;}
+.cloud-provider-btn .provider-desc{font-size:.55rem;opacity:.6;text-transform:none;letter-spacing:.02em;}
+.cloud-setup-note{background:rgba(201,148,58,.08);border:1px solid rgba(201,148,58,.25);border-radius:2px;padding:.7rem .9rem;font-size:.65rem;color:#c9943a;line-height:1.65;margin-bottom:1rem;}
+.cloud-setup-note a{color:var(--gold);}
+.cloud-filename-row{display:flex;flex-direction:column;gap:.3rem;margin-bottom:1rem;}
+.cloud-filename-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#7a9acc;}
+.cloud-filename-input{font-family:'DM Mono',monospace;font-size:.75rem;padding:.45rem .7rem;border:1.5px solid rgba(200,184,154,.25);border-radius:2px;background:rgba(250,244,236,.06);color:#f5ede0;width:100%;}
+.cloud-filename-input:focus{outline:none;border-color:var(--gold);}
+.cloud-or-divider{text-align:center;font-size:.62rem;color:#5a4a38;letter-spacing:.1em;text-transform:uppercase;margin:.6rem 0;}
+.cloud-direct-dl{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;width:100%;padding:.55rem;border:1px solid rgba(90,170,122,.35);background:transparent;color:#5aaa7a;cursor:pointer;border-radius:2px;transition:all .15s;text-align:center;}
+.cloud-direct-dl:hover{background:rgba(90,170,122,.12);}
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">✦ Story Architect ✦</p>
+  <h1>Book <em>Idea</em> Generator</h1>
+  <p class="subtitle">Select your variables — forge your premise — generate with AI</p>
+</header>
+
+<div class="toolbar">
+  <button class="tb-btn green" onclick="savePreset()">💾 Save Preset</button>
+  <button class="tb-btn" onclick="exportJSON()">↗ Export JSON</button>
+  <button class="tb-btn" onclick="document.getElementById('importFile').click()">↙ Import JSON</button>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+  <button class="tb-btn" onclick="resetAll()" style="border-color:#b5451b;color:#b5451b;">↺ New Book</button>
+  <div class="tb-sep"></div>
+  <span id="apiStatus" style="font-size:.6rem;letter-spacing:.08em;padding:.3rem .7rem;border-radius:2px;display:none;"></span>
+  <button class="tb-btn gold" onclick="openApiModal()">🔑 Set API Key</button>
+</div>
+
+<div class="genre-tabs" id="genreTabs"></div>
+
+<div class="form-wrap">
+  <div class="api-note" id="apiNote">
+    <b>AI Pitch Generation:</b> Set your Anthropic API key (button top-right) to enable full AI-written back-cover blurbs. Without a key, a structured template pitch is generated instead. Your key is stored only in your browser.
+  </div>
+
+  <div class="author-panel">
+    <div class="panel-header" onclick="togglePanel('authorBody','authorHint')">
+      <div class="panel-title">✍️ Author Settings</div>
+      <span class="panel-hint" id="authorHint">▼ expand</span>
+    </div>
+    <div class="panel-body" id="authorBody">
+      <div class="author-fields">
+        <div class="field-group"><span class="green-label">Pen Name / Author Name</span><input class="green-input" type="text" id="penName" placeholder="e.g. Victoria Ashwood"></div>
+        <div class="field-group"><span class="green-label">Publisher / Imprint</span><input class="green-input" type="text" id="publisher" placeholder="e.g. Midnight Ink Press"></div>
+        <div class="field-group"><span class="green-label">Target Market / Country</span><input class="green-input" type="text" id="market" placeholder="e.g. Australian, US trade"></div>
+        <div class="field-group"><span class="green-label">Writing Style Notes</span><input class="green-input" type="text" id="styleNotes" placeholder="e.g. Lush prose, unreliable narrators"></div>
+        <div class="field-group"><span class="green-label">Comparable Titles (Comps)</span><input class="green-input" type="text" id="comps" placeholder="e.g. Tana French meets Kate Atkinson"></div>
+        <div class="field-group"><span class="green-label">Additional Notes for AI</span><input class="green-input" type="text" id="extraNotes" placeholder="e.g. Always include a dog as a side character"></div>
+      </div>
+      <p style="font-size:.62rem;color:#5aaa7a;">These details appear on every generated brief and are included in AI pitch prompts.</p>
+    </div>
+  </div>
+
+  <div class="presets-panel" id="presetsPanel">
+    <div class="panel-header" onclick="togglePanel('presetsBody','presetsHint')">
+      <div class="panel-title" style="color:#7a4bb5;">📌 Saved Presets</div>
+      <span class="panel-hint" style="color:#a080d0;" id="presetsHint">▼ expand</span>
+    </div>
+    <div class="panel-body" id="presetsBody">
+      <p style="font-size:.62rem;color:#9070c0;margin-bottom:.5rem;">Click a preset to load it. Presets save all field values, author settings, series config and taboo defaults.</p>
+      <div class="preset-grid" id="presetGrid"></div>
+      <p style="font-size:.6rem;color:#b090d0;margin-top:.6rem;font-style:italic;" id="noPresetsHint">No presets saved yet. Configure your settings and click "Save Preset" in the toolbar.</p>
+    </div>
+  </div>
+
+  <div id="commonFields"></div>
+  <div id="genreFields"></div>
+
+  <div class="series-panel">
+    <div class="panel-header" onclick="togglePanel('seriesBody','seriesHint')">
+      <div class="panel-title" style="color:var(--sa);">📚 Series Manager</div>
+      <span class="panel-hint" id="seriesHint">▼ expand</span>
+    </div>
+    <div class="panel-body" id="seriesBody">
+      <div class="toggle-row">
+        <label class="toggle-switch">
+          <input type="checkbox" id="seriesEnabled" onchange="toggleSeriesConfig()">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+        <span class="toggle-label">This book is part of a series</span>
+      </div>
+      <div class="series-config" id="seriesConfig">
+        <div class="series-fields">
+          <div class="field-group"><span class="series-label">Series Name</span><input class="series-input" type="text" id="seriesName" placeholder="e.g. The Ashwood Chronicles"></div>
+          <div class="field-group"><span class="series-label">Series World / Setting</span><input class="series-input" type="text" id="seriesWorld" placeholder="e.g. Victorian London, 1888"></div>
+          <div class="field-group"><span class="series-label">Continuity Style</span>
+            <select class="series-input" id="seriesContinuity">
+              <option>Sequential (strong arc across all books)</option>
+              <option>Loosely Connected (shared world, fresh leads)</option>
+              <option>Anthology (same characters, standalone plots)</option>
+              <option>Parallel (same events, different POVs)</option>
+            </select>
+          </div>
+          <div class="field-group"><span class="series-label">Series-Wide Overarching Theme</span><input class="series-input" type="text" id="seriesTheme" placeholder="e.g. Each book a different type of betrayal"></div>
+          <div class="field-group"><span class="series-label">Previous Books Synopsis (for AI context)</span><input class="series-input" type="text" id="prevBooks" placeholder="e.g. Book 1: detective discovers...; Book 2: she flees to..."></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;">
+          <span class="series-label" style="margin:0;">Recurring Characters</span>
+          <button class="btn-add-char" onclick="addChar()">+ Add Character</button>
+        </div>
+        <div class="char-list" id="charList"></div>
+        <p style="font-size:.6rem;color:#7a9acc;margin-top:.45rem;font-style:italic;" id="charHint">Add recurring characters — they appear in every book brief and inform the AI pitch.</p>
+        <div class="book-count-row">
+          <div>
+            <div style="font-size:.6rem;color:#7a9acc;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem;">Books in Series</div>
+            <div style="display:flex;align-items:center;gap:.5rem;">
+              <button class="btn-cnt" onclick="changeBooks(-1)">−</button>
+              <div class="cnt-display" id="bookCnt">3</div>
+              <button class="btn-cnt" onclick="changeBooks(1)">+</button>
+            </div>
+          </div>
+          <div style="flex:1;font-size:.6rem;color:#7a9acc;line-height:1.6;padding-left:1rem;">Generates a brief for each book in sequence, with AI aware of previous books, recurring characters, and series arc.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button class="btn-generate" onclick="generateIdea()">✦ Generate with AI</button>
+    <button class="btn-random" onclick="randomiseAll()">🎲 Randomise All</button>
+  </div>
+</div>
+
+<div id="output"><div id="outputInner"></div></div>
+
+<!-- Develop This Book Panel -->
+<div class="develop-panel" id="developPanel" style="display:none;">
+  <div class="develop-card">
+    <div class="develop-header">
+      <div>
+        <div class="develop-title">✍️ Develop This Book</div>
+        <div class="develop-subtitle">AI-powered document suite — built from your brief</div>
+      </div>
+      <div class="develop-book-label" id="developBookLabel">Ready</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.7rem;">
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;">
+        <button class="develop-gen-all" id="btnGenAll" onclick="generateAllDocs()">✦ Generate All Documents</button>
+        <button class="develop-series-btn" id="btnGenSeries" onclick="generateSeriesAllDocs()" style="display:none;">📚 Develop Entire Series</button>
+      </div>
+      <span style="font-size:.6rem;color:#7a6a58;font-style:italic;" id="genAllStatus"></span>
+    </div>
+    <!-- Series tab bar — shown when developing a full series -->
+    <div class="series-tab-bar" id="seriesTabBar" style="display:none;"></div>
+    <div id="genAllProgress" style="display:none;height:3px;background:rgba(200,184,154,.2);border-radius:2px;margin-bottom:1rem;overflow:hidden;">
+      <div id="genAllBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),#e8b84a);transition:width .4s ease;border-radius:2px;"></div>
+    </div>
+    <div class="doc-grid" id="docGrid"></div>
+    <div class="doc-output-area" id="docOutputArea"></div>
+    <div style="display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap;" id="developFooter" style="display:none;">
+      <button class="develop-copy-all" onclick="copyAllDocs()">⎘ Copy All Documents</button>
+      <button class="develop-export-pdf" onclick="exportDocsPDF()">⬇ Export All as PDF</button>
+      <button class="develop-export-pdf" onclick="openCloudModal()" style="border-color:#7a9acc;color:#7a9acc;">⬆ Export MD</button>
+    </div>
+  </div>
+</div>
+
+<!-- API Key Modal -->
+<div class="modal-overlay hidden" id="apiModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeApiModal()">✕</button>
+    <h2>🔑 Anthropic API Key</h2>
+    <p style="font-size:.73rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Enter your Anthropic API key to enable AI-written pitch generation. The key is stored only in your browser's localStorage and never sent anywhere except Anthropic's API.</p>
+    <label style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.35rem;">API Key</label>
+    <input type="password" id="apiKeyInput" style="width:100%;font-family:'DM Mono',monospace;font-size:.78rem;padding:.5rem .7rem;border:1.5px solid var(--border);border-radius:2px;background:var(--light);margin-bottom:1rem;" placeholder="sk-ant-api03-...">
+    <p style="font-size:.62rem;color:var(--muted);margin-bottom:1rem;">Get a key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent);">console.anthropic.com</a>. Uses claude-sonnet-4-20250514.</p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeApiModal()">Cancel</button>
+      <button class="btn-modal-save" onclick="saveApiKey()">Save Key</button>
+    </div>
+  </div>
+</div>
+
+<!-- Save Preset Modal -->
+<div class="modal-overlay hidden" id="presetModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closePresetModal()">✕</button>
+    <h2>💾 Save Preset</h2>
+    <p style="font-size:.73rem;color:var(--muted);margin-bottom:.9rem;">Name this preset. It will save all current field values, author settings, series configuration, and taboo defaults.</p>
+    <label style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.35rem;">Preset Name</label>
+    <input type="text" class="preset-name-input" id="presetNameInput" style="width:100%;margin-bottom:1rem;" placeholder="e.g. Dark Thriller Template, Cozy Mystery Series...">
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closePresetModal()">Cancel</button>
+      <button class="btn-modal-save" onclick="confirmSavePreset()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cloud Export Modal -->
+<div class="cloud-modal-overlay hidden" id="cloudModal">
+  <div class="cloud-modal">
+    <button class="cloud-modal-close" onclick="closeCloudModal()">✕</button>
+    <h2>⬆ Export Documents</h2>
+    <p class="cloud-modal-sub">Save your development documents as a Markdown file — directly to cloud storage or downloaded locally.</p>
+    <div class="cloud-filename-row">
+      <span class="cloud-filename-label">Filename</span>
+      <input class="cloud-filename-input" type="text" id="cloudFilename" placeholder="e.g. ghost-signal-book-docs.md">
+    </div>
+    <div class="cloud-setup-note">
+      <b>Cloud integration requires a one-time app setup.</b><br>
+      <b>Google Drive:</b> Register at <a href="https://console.cloud.google.com" target="_blank">Google Cloud Console</a> — enable Drive API, create OAuth 2.0 credentials, add your domain to authorised origins.<br>
+      <b>OneDrive:</b> Register at <a href="https://portal.azure.com" target="_blank">Azure Portal</a> — create an app registration, add <code>Files.ReadWrite</code> scope, set redirect URI to this page's URL.<br>
+      Paste your Client ID below once set up — the tool handles OAuth sign-in automatically.
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem;">
+      <label class="cloud-filename-label">Google OAuth Client ID</label>
+      <input class="cloud-filename-input" type="text" id="googleClientId" placeholder="xxx.apps.googleusercontent.com" style="font-size:.68rem;">
+      <label class="cloud-filename-label" style="margin-top:.3rem;">Microsoft App Client ID</label>
+      <input class="cloud-filename-input" type="text" id="msClientId" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" style="font-size:.68rem;">
+    </div>
+    <div class="cloud-provider-grid">
+      <button class="cloud-provider-btn" onclick="exportToGoogleDrive()">
+        <span class="provider-icon">🟦</span>
+        <span class="provider-name">Google Drive</span>
+        <span class="provider-desc">Saves to My Drive. Requires OAuth sign-in.</span>
+      </button>
+      <button class="cloud-provider-btn" onclick="exportToOneDrive()">
+        <span class="provider-icon">☁️</span>
+        <span class="provider-name">OneDrive</span>
+        <span class="provider-desc">Saves to My Files. Requires Microsoft sign-in.</span>
+      </button>
+    </div>
+    <div class="cloud-or-divider">— or download directly —</div>
+    <button class="cloud-direct-dl" onclick="downloadMDDirectly()">⬇ Download as .md file</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════════════════
+
+const GENRES = [
+  {id:'espionage',label:'Espionage',icon:'🕵️'},{id:'thriller',label:'Thriller',icon:'🔪'},
+  {id:'romcom',label:'Rom-Com',icon:'😂'},{id:'romance',label:'Romance',icon:'🌹'},
+  {id:'romantasy',label:'Romantasy',icon:'✨'},{id:'fantasy',label:'Fantasy',icon:'⚔️'},
+  {id:'scifi',label:'Sci-Fi',icon:'🚀'},{id:'horror',label:'Horror',icon:'🦇'},
+  {id:'mystery',label:'Mystery',icon:'🔍'},{id:'crime',label:'Crime',icon:'🚔'},
+  {id:'historical',label:'Historical Fiction',icon:'🏰'},{id:'ya',label:'Young Adult',icon:'🌟'},
+  {id:'childrens',label:"Children's",icon:'📚'},
+];
+
+const WC_OPTIONS = [
+  {id:'short',label:'Short Story',range:'1k–15k',desc:'Focused, punchy, single-sitting. One conflict, minimal subplots.'},
+  {id:'novella',label:'Novella',range:'20k–50k',desc:'Tight cast, one strong arc. Great for genre experiments.'},
+  {id:'novel',label:'Full Novel',range:'70k–120k',desc:'Full development, subplots, world-building. The complete experience.'},
+  {id:'epic',label:'Epic / Saga',range:'120k+',desc:'Multi-POV, sprawling cast, complex lore. Doorstop territory.'},
+];
+
+const TABOO_OPTIONS = [
+  'Trauma & PTSD','Addiction','Mental Illness','Child in Danger',
+  'Abuse (Physical)','Abuse (Psychological)','Torture / Captivity',
+  'Suicide / Self-Harm','Morally Reprehensible Protagonist',
+  'Religious Extremism','Political Violence','War Crimes',
+  'Cult Dynamics','Body Horror','Grief / Terminal Illness',
+  'Racism / Discrimination','Sexual Violence (Non-Graphic)','Animal Harm',
+];
+
+const COMMON_FIELDS = [
+  {section:'Core Premise',fields:[
+    {id:'protagonist',label:'Protagonist Type',type:'select',options:['Reluctant Hero','Fallen Expert','Ordinary Person Thrust In','Anti-Hero','Unreliable Narrator','Morally Ambiguous Lead','Chosen One (Subverted)','Disgraced Professional','Child / Teen Lead','Elderly Protagonist','Non-human / AI Lead','Ensemble / No Single Lead']},
+    {id:'setting_type',label:'Setting Type',type:'select',options:['Contemporary Real World','Near Future','Far Future','Historical (Pre-1900)','Historical (1900–2000)','Alternate History','Secondary World (Entirely Fictional)','Parallel / Hidden World','Post-Apocalyptic','Space / Other Planets','Underwater / Underground','Virtual / Digital Reality']},
+    {id:'scale',label:'Story Scale',type:'select',options:['Intimate (One Location / Few Characters)','Small Community','City-Wide','National','Global','Cosmic / Multiversal']},
+    {id:'pov',label:'Point of View',type:'select',options:['1st Person — Single','1st Person — Multiple','3rd Person Limited','3rd Person Omniscient','2nd Person','Alternating Close 3rd']},
+  ]},
+  {section:'Tone & Style',fields:[
+    {id:'tone',label:'Overall Tone',type:'select',options:['Dark & Grim','Hopeful Despite Darkness','Witty & Satirical','Melancholic / Elegiac','Tense & Urgent','Whimsical & Playful','Philosophical / Contemplative','Pulpy & Propulsive','Literary & Lyrical','Humorous / Comic','Dreamlike / Surreal','Grounded & Realistic']},
+    {id:'pacing',label:'Pacing',type:'range',min:1,max:10,def:6,minL:'Slow Burn',maxL:'Breakneck'},
+    {id:'narrative_structure',label:'Narrative Structure',type:'select',options:['Linear Chronology','Non-Linear / Fragmented','Framing Story / Nested','In Medias Res','Epistolary (Letters / Documents / Logs)','Dual Timeline','Multiple Timelines','Reverse Chronology']},
+  ]},
+  {section:'Themes & Darkness',fields:[
+    {id:'central_theme',label:'Central Theme',type:'select',options:['Identity & Self-Discovery','Power & Corruption','Love & Sacrifice','Survival & Resilience','Justice vs. Revenge','Truth vs. Deception','Nature vs. Technology','Memory & the Past','Class & Inequality','Grief & Loss','Redemption','Moral Ambiguity','Freedom vs. Control','Found Family','Legacy & Inheritance']},
+    {id:'violence_level',label:'Violence Level',type:'range',min:0,max:10,def:4,minL:'None',maxL:'Extreme / Visceral'},
+    {id:'moral_complexity',label:'Moral Complexity',type:'range',min:1,max:10,def:6,minL:'Clear Good/Evil',maxL:'Fully Ambiguous'},
+    {id:'sexual_content',label:'Sexual Content',type:'select',options:['None','Implied / Fade to Black','Moderate / Tasteful','Explicit']},
+  ]},
+  {section:'Character Dynamics',fields:[
+    {id:'antagonist',label:'Antagonist Type',type:'select',options:["Human Villain (Believes They're Right)",'Human Villain (Pure Malice)','System / Institution','Nature / Environment','The Protagonist Themselves','Unclear — Ambiguous Threat','Competing Protagonist (No True Villain)','Supernatural / Cosmic Entity','Technology / AI','Society / Culture']},
+    {id:'relationship_core',label:'Central Relationship',type:'select',options:['Romantic Partners','Enemies to Lovers','Mentor & Student','Rivals','Parent & Child','Siblings','Old Friends Reunited','Strangers Forced Together','Investigator & Subject','Betrayer & Betrayed','Twins / Doppelgangers','Human & Non-Human Bond']},
+    {id:'ensemble_size',label:'Cast Size',type:'select',options:['Solo (Largely One Character)','Duo','Small Group (3–5)','Medium (6–12)','Large Ensemble']},
+  ]},
+  {section:'World & Craft',fields:[
+    {id:'worldbuilding',label:'Worldbuilding Depth',type:'range',min:1,max:10,def:5,minL:'Minimal',maxL:'Immersive / Encyclopaedic'},
+    {id:'target_audience',label:'Target Audience',type:'select',options:['Children (8–12)','Young Adult (13–17)','New Adult (18–25)','General Adult','Literary / Academic','Mature Adult (explicit themes)']},
+    {id:'series_feel',label:'Standalone vs Series Feel',type:'select',options:['Standalone','Duology','Trilogy','Ongoing Series','Interconnected Standalone Books']},
+  ]},
+];
+
+const GENRE_FIELDS = {
+  espionage:{section:'Espionage Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Cold War Espionage','Contemporary Intelligence','Cyber Espionage / Tech Thriller','Double Agent / Mole Hunt','Corporate Espionage','Covert Ops / Black Ops','Rogue Agent','Deep Cover / Sleeper','Political Assassination Plot','Counter-Terrorism']},
+    {id:'g_agency',label:'Organisation',type:'select',options:['CIA (US)','MI6 (British)','Mossad (Israeli)','FSB / SVR (Russian)','Fictional Agency','Private Intelligence Firm','Freelance / Rogue Operative','Multinational / NATO','Terrorist Cell POV','Unknown / Shadowy Entity']},
+    {id:'g_tradecraft',label:'Tradecraft Style',type:'select',options:['High-Tech Gadgets & Surveillance','Old-School Human Intelligence (HUMINT)','Psychological Manipulation','Deep Cover & Identity','Action-Forward (Jason Bourne Style)','Slow Burn Paranoia (le Carré Style)','Ensemble Team Operation','Solo Operative']},
+    {id:'g_loyalty',label:'Loyalty & Betrayal',type:'select',options:['Clear Patriotic Mission','Moral Ambiguity — Both Sides Flawed','Double Agent — True Allegiance Unknown','Defection Arc','Whistleblower / Conscience Crisis','Revenge Mission','Love Interest Compromises Mission','The Mission Was a Lie']},
+    {id:'g_tension',label:'Primary Tension',type:'range',min:1,max:10,def:8,minL:'Slow Burn Paranoia',maxL:'Non-Stop Action'},
+  ]},
+  thriller:{section:'Thriller Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Psychological Thriller','Legal Thriller','Political Conspiracy','Medical Thriller','Domestic Thriller','Techno-Thriller','Crime Thriller','Eco-Thriller','Financial Thriller','Survival Thriller']},
+    {id:'g_threat',label:'Central Threat',type:'select',options:['Serial Killer','Terrorism','Kidnapping','Assassination','Blackmail','Identity Theft','Corporate Cover-Up','Government Conspiracy','Pandemic / Bioweapon','Stalker','Natural Disaster','Wrongful Accusation']},
+    {id:'g_twist',label:'Twist Style',type:'select',options:['Protagonist Is the Killer','Villain Was the Hero All Along','It Was an Accident','Everyone Is Complicit','No Twist — Earned Reveal','Unreliable Memory','Twin / Double Identity','The Past Is Not What Was Told']},
+    {id:'g_isolation',label:'Isolation Level',type:'range',min:1,max:10,def:5,minL:'Urban / Connected',maxL:'Completely Cut Off'},
+  ]},
+  romcom:{section:'Romantic Comedy Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Classic Hollywood (Meet-Cute, Chaos, Resolution)','Workplace Rom-Com','Travel / Fish Out of Water','Mistaken Identity / Impersonation','Rival-to-Lovers Competition','Holiday / Seasonal Rom-Com','Fake Relationship Gone Real','Social Media / Modern Dating','Multicultural / Cross-Cultural','Later-in-Life / Second Act','Friend Group Crossover','Nerdy / Genre-Savvy (Self-Aware)']},
+    {id:'g_meetcute',label:'Meet-Cute Style',type:'select',options:['Literally Collide (Classic)','Mistaken for Someone Else','Enemies Before They Know Each Other','Online First, IRL Disaster Second','Childhood Sweethearts, Estranged','One Night Stand Then Coworkers','Wrong Number / Wrong Inbox','Both After the Same Thing','Hired / Contracted Arrangement','Shared Living Space (Accidental)','No Meet-Cute — Slow Realisation']},
+    {id:'g_comedy',label:'Comedy Style',type:'select',options:['Witty Banter & Quippy Dialogue','Slapstick & Physical Comedy','Cringe Humour / Awkward Situations','Satirical / Skewering an Industry','Warm & Heartfelt with Comedic Beats','Absurdist / Heightened Reality','Dark Comedy Undertones','Self-Aware / Fourth-Wall Adjacent']},
+    {id:'g_obstacle',label:'Central Obstacle',type:'select',options:["Misunderstanding That Won't Resolve",'Competing Ambitions / Careers','Family Disapproval','Old Flame Re-enters','One Is Leaving Town / Country','One Is Technically Unavailable','Class / Social World Gap','They Made a Bet That Complicates Everything','Deep-Seated Fear of Commitment','Past Trauma Resurfaces at Worst Moment']},
+    {id:'g_gesture',label:'Third-Act Grand Gesture',type:'select',options:['Airport / Station Chase','Public Declaration (Speech / Sign / Mic Drop)','Showing Up in the Rain','The Letter They Were Never Meant to Hear','Abandoning Something Huge for Them','Letting Them Go (Selfless Exit)','No Grand Gesture — Quiet Honest Conversation','Both Stubborn — Comedic Collision']},
+  ]},
+  romance:{section:'Romance Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Contemporary Romance','Historical Romance','Paranormal Romance','Romantic Suspense','Sports Romance','Dark Romance','Second Chance','Forbidden Love','Small Town Romance','Billionaire Romance','Military Romance','Workplace Romance']},
+    {id:'g_trope',label:'Core Trope',type:'select',options:['Enemies to Lovers','Fake Dating','Forced Proximity','Second Chance','Grumpy / Sunshine',"Best Friend's Partner",'Forbidden Love','Bodyguard / Protector','Marriage of Convenience','Childhood Sweethearts','Slow Burn','Age Gap',"Brother's Best Friend",'Reverse Harem']},
+    {id:'g_heat',label:'Heat Level',type:'range',min:0,max:5,def:2,minL:'Sweet / Clean',maxL:'Scorching / Explicit'},
+    {id:'g_hea',label:'Ending',type:'select',options:['HEA (Happily Ever After)','HFN (Happy For Now)','Bittersweet','Tragic / Open','Ambiguous']},
+  ]},
+  romantasy:{section:'Romantasy Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Court Intrigue & Fae Romance','Dark Fantasy Romance','Dragon Rider Romance','Enemies-to-Lovers Epic Fantasy','Slow Burn Magic Academy','Gods & Mortals','Chosen One Romance','Villain / Anti-Hero Romance','Portal Fantasy Romance','Arranged Marriage in a Fantasy Kingdom']},
+    {id:'g_magic',label:'Magic System',type:'select',options:['Hard Rules — Defined Costs & Limits','Soft — Mysterious & Unpredictable','Blood Magic','Elemental','Fae / Courtly Magic','Soul Bond / Mate Bond Magic','Forbidden / Stolen Power','Rare Gift (Few Users)','Magic Tied to Emotion or Love','Dark / Corrupting Magic']},
+    {id:'g_heat',label:'Heat Level',type:'range',min:0,max:5,def:3,minL:'Sweet / Slow Burn',maxL:'Scorching / Explicit'},
+    {id:'g_trope',label:'Core Romance Trope',type:'select',options:['Enemies to Lovers','Forced Proximity (Imprisoned / Questing Together)','Fake Alliance Gone Real','Fated Mates / Soul Bond','Forbidden (Different Factions / Species)','Grumpy Immortal / Sunshine Mortal','Slow Burn Across Multiple Books','Villain Redemption Arc Romance']},
+    {id:'g_politics',label:'Political Intrigue',type:'range',min:0,max:10,def:6,minL:'Pure Romance Focus',maxL:'Complex Court Politics'},
+  ]},
+  fantasy:{section:'Fantasy Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Epic / High Fantasy','Grimdark','Cozy Fantasy','Urban Fantasy','Dark Fantasy','Portal Fantasy','Mythological Retelling','Low Fantasy (Minimal Magic)','Progression / LitRPG','Flintlock / Gunpowder Fantasy','Fairy Tale Retelling','Sword & Sorcery']},
+    {id:'g_magic',label:'Magic System',type:'select',options:['Hard Rules — Defined Costs & Limits','Soft — Mysterious & Unpredictable','Blood Magic','Elemental','Word / Language Based','Technology-Mimicking','Bound to Emotion','Borrowed / Stolen Power','Rare Gift (Few Users)','Universal (Anyone Can Learn)','No Magic System']},
+    {id:'g_politics',label:'Political Intrigue',type:'range',min:0,max:10,def:5,minL:'None',maxL:'Game of Thrones Level'},
+    {id:'g_chosen',label:'Chosen One Trope',type:'select',options:["Classic Chosen One","Subverted — They're Wrong",'Deconstructed','Multiple Chosen Ones','No Chosen One — Earned Heroism','The Villain Is the Chosen One']},
+  ]},
+  scifi:{section:'Sci-Fi Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Hard Sci-Fi (Science-Forward)','Space Opera','Cyberpunk','Solarpunk','Biopunk','Military Sci-Fi','Cli-Fi (Climate Fiction)','First Contact','Generation Ship','Time Travel','Dystopian','Post-Human / Transhuman','AI Uprising']},
+    {id:'g_tech',label:'Technology Level',type:'range',min:1,max:10,def:6,minL:'Near Future (+50yr)',maxL:'Post-Singularity'},
+    {id:'g_concept',label:'Central SF Concept',type:'select',options:['FTL / Warp Travel','AI Consciousness','Genetic Engineering','Virtual Reality / Simulation Theory','Alien First Contact','Time Travel','Multiverse / Parallel Universes','Mind Uploading / Immortality','Terraforming','Megastructures','Post-Scarcity Economy','Nanotechnology']},
+    {id:'g_optimism',label:'Outlook',type:'range',min:0,max:10,def:5,minL:'Deeply Dystopian',maxL:'Utopian'},
+  ]},
+  horror:{section:'Horror Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Supernatural Horror','Psychological Horror','Cosmic / Lovecraftian','Folk Horror','Body Horror','Gothic Horror','Slasher / Survival','Haunted House','Creature Feature','Quiet Horror (Dread Over Gore)','Occult / Cult','Paranormal Investigator','Social Horror']},
+    {id:'g_monster',label:'Monster / Threat',type:'select',options:['Unknown / Unknowable','Ghost / Spirit','Demon / Possession','Serial Killer (Human)','Cult','Ancient God','Werewolf','Vampire','Witch / Cursed Entity','Nature / Environment','The Mind Itself','Technology / Experiment Gone Wrong',"The Protagonist's Own Past"]},
+    {id:'g_gore',label:'Gore Level',type:'range',min:0,max:10,def:4,minL:'Bloodless Dread',maxL:'Extreme Gore'},
+    {id:'g_survival',label:'Survival Odds',type:'select',options:['Everyone Dies','Most Die — Pyrrhic Survival','Protagonist Survives (Scarred)','Bittersweet Escape','Full Resolution — Evil Defeated','Ambiguous']},
+  ]},
+  mystery:{section:'Mystery Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Cozy Mystery','Police Procedural','Hardboiled Detective','Amateur Sleuth','Legal Mystery','Historical Mystery','Forensic / Crime Thriller Hybrid','Whodunit (Classic)','Cold Case','True Crime Style','Heist / Caper']},
+    {id:'g_crime',label:'Central Crime',type:'select',options:['Murder (Single Victim)','Serial Murders','Disappearance','Theft / Heist','Fraud / Financial Crime','Art / Antiquities Crime','Political Assassination','Cold Case Reopened','Kidnapping','Wrongful Conviction','Identity Crime','Mass Casualty Event']},
+    {id:'g_detective',label:'Investigator',type:'select',options:['Police Detective (Mainstream)','Maverick / Rogue Cop','Private Investigator','Amateur (No Training)','Forensic Specialist','Journalist / Reporter','Lawyer','Criminal Turned Informant','Paranormal Investigator','Victim Investigating Own Case']},
+    {id:'g_herrings',label:'Red Herring Density',type:'range',min:1,max:10,def:5,minL:'Few — Lean Puzzle',maxL:'Dense — Many Suspects'},
+  ]},
+  crime:{section:'Crime Fiction Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Organised Crime / Mob','Heist / Caper','White Collar Crime','Drug Trade / Cartel','True Crime Style Fiction','Gang / Street Crime','Art / Antiquities Crime','Political Crime','Serial Offender Procedural','Vigilante Justice']},
+    {id:'g_pov_side',label:'Narrative Perspective',type:'select',options:['Detective / Law Enforcement POV','Criminal POV','Victim POV','Journalist / Outsider POV','Both Sides Alternating','Omniscient Observer']},
+    {id:'g_morality',label:'Justice Outcome',type:'select',options:['Criminal Caught — Justice Served','Criminal Escapes — Critique of System','Ambiguous — No Clear Resolution','Vigilante Justice Prevails','Systemic Corruption Exposed','Tragic — Everyone Loses']},
+    {id:'g_grit',label:'Grit Level',type:'range',min:1,max:10,def:6,minL:'Polished / Stylised',maxL:'Raw / Unflinching'},
+  ]},
+  historical:{section:'Historical Fiction Specifics',fields:[
+    {id:'g_era',label:'Historical Era',type:'select',options:['Ancient (Pre-500 AD)','Medieval (500–1400)','Renaissance / Early Modern (1400–1700)','Georgian / Regency (1700–1820)','Victorian (1820–1900)','Edwardian / WWI Era (1900–1920)','Interwar / WWII (1920–1945)','Post-War / Cold War (1945–1980)','Late 20th Century (1980–2000)']},
+    {id:'g_region',label:'Region / Culture',type:'select',options:['British Isles','Continental Europe','North America','Latin America','Middle East / Ottoman Empire','Sub-Saharan Africa','East Asia','South Asia','Pacific / Oceania','Ancient Mediterranean','Colonial / Empire Intersection']},
+    {id:'g_real',label:'Real Historical Figures',type:'select',options:['No real figures — purely fictional','Background/minor real figures only','Major real figures as supporting characters','Real figure as protagonist']},
+    {id:'g_accuracy',label:'Historical Accuracy',type:'range',min:1,max:10,def:7,minL:'Loose Inspiration',maxL:'Rigorous Research'},
+  ]},
+  ya:{section:'Young Adult Specifics',fields:[
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['YA Contemporary','YA Fantasy','YA Dystopian / Sci-Fi','YA Romance','YA Thriller / Mystery','YA Historical Fiction','YA Horror','YA Paranormal','YA Sports','YA Issue-Driven (Own Voices)','YA Adventure / Quest']},
+    {id:'g_stakes',label:'Personal vs World Stakes',type:'range',min:1,max:10,def:6,minL:'Deeply Personal / Internal',maxL:'Save-the-World Epic'},
+    {id:'g_coming_of_age',label:'Coming-of-Age Focus',type:'select',options:['Identity & Self-Discovery','First Love / Heartbreak','Family Conflict & Independence','Grief & Loss','Mental Health Journey','Social Pressure & Belonging','Political Awakening','Finding Voice & Power','Leaving Home / Growing Up','Confronting Trauma']},
+    {id:'g_tone_ya',label:'Tone',type:'select',options:['Hopeful & Empowering','Dark & Unflinching','Funny & Relatable','Romantic & Swoony','Action-Packed & Propulsive','Emotional & Tearjerking','Thoughtful & Quiet','Magical & Wondrous']},
+  ]},
+  childrens:{section:"Children's Fiction Specifics",fields:[
+    {id:'g_age',label:'Age Range',type:'select',options:["Picture Book (0–5)",'Early Reader (5–7)','Chapter Book (6–9)','Middle Grade (8–12)','Upper Middle Grade / YA Bridge (10–14)']},
+    {id:'g_sub',label:'Sub-Genre',type:'select',options:['Adventure / Quest','School / Friendship Story','Fantasy / Magic','Animal Story','Mystery / Detective','Humour / Comedy','Family / Home','Science / Discovery','Fairy Tale / Fable','Horror (Age-Appropriate)','Sports Story']},
+    {id:'g_lesson',label:'Core Lesson / Theme',type:'select',options:['Friendship & Belonging','Courage & Facing Fears','Kindness & Empathy','Being Different Is OK','Family & Change','Honesty & Integrity','Loss & Grief (Age-Appropriate)','Environmental Awareness','Self-Belief / Growth Mindset','Curiosity & Learning']},
+    {id:'g_whimsy',label:'Whimsy Level',type:'range',min:1,max:10,def:7,minL:'Grounded / Realistic',maxL:'Wildly Magical'},
+  ]},
+};
+
+// ══════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════
+let activeGenre = 'espionage';
+let tabooState  = {};
+let tabooDefaults = new Set(['Trauma & PTSD','Addiction','Mental Illness']);
+let selectedWC = 'novel';
+let seriesBookCount = 3;
+let chars = [], charId = 0;
+let presets = [];
+
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+function init() {
+  try {
+    const td = localStorage.getItem('bookgen_tabooDefaults');
+    if (td) tabooDefaults = new Set(JSON.parse(td));
+    const ps = localStorage.getItem('bookgen_presets');
+    if (ps) presets = JSON.parse(ps);
+    const ak = localStorage.getItem('bookgen_apikey') || sessionStorage.getItem('bookgen_apikey');
+    if (ak) { document.getElementById('apiKeyInput').value = ak; updateApiStatus(ak); }
+    ['penName','publisher','market','styleNotes','comps','extraNotes'].forEach(id => {
+      const v = localStorage.getItem('bookgen_'+id);
+      if (v) document.getElementById(id).value = v;
+    });
+  } catch(e) {}
+  TABOO_OPTIONS.forEach(o => { tabooState[o] = tabooDefaults.has(o); });
+  renderGenreTabs(); renderCommonFields(); renderGenreFields(); renderPresets();
+  ['penName','publisher','market','styleNotes','comps','extraNotes'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      try { localStorage.setItem('bookgen_'+id, document.getElementById(id).value); } catch(e) {}
+    });
+  });
+}
+
+function togglePanel(bodyId, hintId) {
+  const body = document.getElementById(bodyId);
+  const hint = document.getElementById(hintId);
+  const open = body.classList.toggle('open');
+  hint.textContent = open ? '▲ collapse' : '▼ expand';
+}
+
+function renderGenreTabs() {
+  document.getElementById('genreTabs').innerHTML = GENRES.map(g =>
+    `<button class="genre-tab ${g.id===activeGenre?'active':''}" onclick="switchGenre('${g.id}')">
+      <span>${g.icon}</span> ${g.label}
+    </button>`).join('');
+}
+function switchGenre(id) { activeGenre = id; renderGenreTabs(); renderGenreFields(); }
+
+function renderField(f) {
+  if (f.type === 'select') return `<div class="field-group">
+    <label for="${f.id}">${f.label}</label>
+    <select id="${f.id}">${f.options.map(o=>`<option>${o}</option>`).join('')}</select>
+  </div>`;
+  if (f.type === 'range') {
+    const def = f.def ?? Math.round((f.min+f.max)/2);
+    return `<div class="field-group"><label>${f.label}</label>
+      <div class="range-wrap"><div class="range-row">
+        <input type="range" id="${f.id}" min="${f.min}" max="${f.max}" value="${def}"
+          oninput="this.nextElementSibling.textContent=this.value">
+        <span class="range-val">${def}</span>
+      </div><div class="range-labels"><span>${f.minL}</span><span>${f.maxL}</span></div></div>
+    </div>`;
+  }
+  return '';
+}
+function renderSection(s) {
+  return `<p class="section-label">${s.section}</p><div class="fields-grid">${s.fields.map(renderField).join('')}</div>`;
+}
+function renderWCSelector() {
+  return `<p class="section-label">Word Count / Format</p>
+    <div class="wc-selector">${WC_OPTIONS.map(w=>`
+      <div class="wc-card ${selectedWC===w.id?'active':''}" onclick="selectWC('${w.id}')">
+        <div class="wc-title">${w.label}</div><div class="wc-range">${w.range} words</div>
+        <div class="wc-desc">${w.desc}</div>
+      </div>`).join('')}</div>`;
+}
+function selectWC(id) {
+  selectedWC = id;
+  const el = document.getElementById('wcSection');
+  if (el) el.innerHTML = renderWCSelector();
+}
+function renderTaboo() {
+  return `<p class="section-label">Content Restrictions</p>
+    <div class="taboo-header">
+      <span style="font-size:.6rem;color:var(--muted);"><b style="color:var(--ink);">Black = Banned.</b> White = Allowed. ⭐ = saved default.</span>
+      <div class="taboo-actions">
+        <button class="taboo-btn" onclick="tabooAll(true)">Ban All</button>
+        <button class="taboo-btn" onclick="tabooAll(false)">Allow All</button>
+        <button class="taboo-btn" onclick="tabooReset()">Reset to Defaults</button>
+        <button class="taboo-btn save-def" onclick="tabooSaveDefaults()">⭐ Save as Default</button>
+      </div>
+    </div>
+    <div class="check-grid" id="tabooGrid">${TABOO_OPTIONS.map(o=>tabooChipHtml(o)).join('')}</div>`;
+}
+function tabooChipHtml(o) {
+  const on=!!tabooState[o],def=tabooDefaults.has(o);
+  const sid='tc_'+o.replace(/[^a-z0-9]/gi,'_');
+  return `<span class="check-pill ${on?'on':''} ${def?'is-def':''}" id="${sid}" onclick="tabooToggle(event,'${o.replace(/'/g,"\\'")}')">
+    ${def?`<span class="def-star" title="Remove from defaults" onclick="tabooToggleDef(event,'${o.replace(/'/g,"\\'")}')">⭐</span>`:''}
+    ${o}</span>`;
+}
+function tabooToggle(e,o){if(e.target.classList.contains('def-star'))return;tabooState[o]=!tabooState[o];refreshTabooGrid();}
+function tabooToggleDef(e,o){e.stopPropagation();if(tabooDefaults.has(o))tabooDefaults.delete(o);else tabooDefaults.add(o);try{localStorage.setItem('bookgen_tabooDefaults',JSON.stringify([...tabooDefaults]));}catch(e_){}refreshTabooGrid();}
+function tabooAll(v){TABOO_OPTIONS.forEach(o=>{tabooState[o]=v;});refreshTabooGrid();}
+function tabooReset(){TABOO_OPTIONS.forEach(o=>{tabooState[o]=tabooDefaults.has(o);});refreshTabooGrid();}
+function tabooSaveDefaults(){tabooDefaults=new Set(TABOO_OPTIONS.filter(o=>tabooState[o]));try{localStorage.setItem('bookgen_tabooDefaults',JSON.stringify([...tabooDefaults]));}catch(e){}refreshTabooGrid();showToast('✓ Defaults saved');}
+function refreshTabooGrid(){const g=document.getElementById('tabooGrid');if(g)g.innerHTML=TABOO_OPTIONS.map(o=>tabooChipHtml(o)).join('');}
+function getTabooActive(){return TABOO_OPTIONS.filter(o=>tabooState[o]);}
+
+function renderCommonFields() {
+  document.getElementById('commonFields').innerHTML =
+    COMMON_FIELDS.map(renderSection).join('') +
+    `<div id="wcSection">${renderWCSelector()}</div>` +
+    `<div id="tabooSection">${renderTaboo()}</div>`;
+}
+function renderGenreFields(){document.getElementById('genreFields').innerHTML=renderSection(GENRE_FIELDS[activeGenre]);}
+
+function toggleSeriesConfig(){document.getElementById('seriesConfig').classList.toggle('open',document.getElementById('seriesEnabled').checked);}
+function changeBooks(d){seriesBookCount=Math.max(2,Math.min(12,seriesBookCount+d));document.getElementById('bookCnt').textContent=seriesBookCount;}
+function addChar(){chars.push({id:++charId,name:'',role:'',trait:'',arc:''});renderCharList();}
+function removeChar(id){chars=chars.filter(c=>c.id!==id);renderCharList();}
+function updateChar(id,field,val){const c=chars.find(c=>c.id===id);if(c)c[field]=val;}
+function renderCharList(){
+  const list=document.getElementById('charList');
+  document.getElementById('charHint').style.display=chars.length?'none':'block';
+  list.innerHTML=chars.map(c=>`<div class="char-card">
+    <div class="char-row">
+      <div class="field-group"><span class="series-label">Name</span><input class="series-input" type="text" value="${c.name}" placeholder="Character name" oninput="updateChar(${c.id},'name',this.value)"></div>
+      <div class="field-group"><span class="series-label">Role</span><input class="series-input" type="text" value="${c.role}" placeholder="e.g. Protagonist" oninput="updateChar(${c.id},'role',this.value)"></div>
+      <div class="field-group"><span class="series-label">Key Trait</span><input class="series-input" type="text" value="${c.trait}" placeholder="e.g. Sarcastic, brave" oninput="updateChar(${c.id},'trait',this.value)"></div>
+      <button class="btn-rem" onclick="removeChar(${c.id})">✕</button>
+    </div>
+    <div class="char-arc-row"><div class="field-group"><span class="series-label">Series-Wide Arc</span><input class="series-input" type="text" value="${c.arc}" placeholder="e.g. Learns to trust again across all 3 books" oninput="updateChar(${c.id},'arc',this.value)"></div></div>
+  </div>`).join('');
+}
+
+function gv(id){const el=document.getElementById(id);return el?el.value:'';}
+function collectParams(){
+  const genre=GENRES.find(g=>g.id===activeGenre);
+  const gf=GENRE_FIELDS[activeGenre];
+  const gVals={};
+  gf.fields.forEach(f=>{gVals[f.id]=gv(f.id);});
+  return {genre,protagonist:gv('protagonist'),setting:gv('setting_type'),scale:gv('scale'),pov:gv('pov'),tone:gv('tone'),pacing:gv('pacing'),structure:gv('narrative_structure'),theme:gv('central_theme'),violence:gv('violence_level'),moralComplexity:gv('moral_complexity'),sexual:gv('sexual_content'),antagonist:gv('antagonist'),relationship:gv('relationship_core'),castSize:gv('ensemble_size'),worldbuilding:gv('worldbuilding'),audience:gv('target_audience'),seriesFeel:gv('series_feel'),dark:getTabooActive(),wordCount:WC_OPTIONS.find(w=>w.id===selectedWC),gVals,penName:gv('penName'),publisher:gv('publisher'),market:gv('market'),styleNotes:gv('styleNotes'),comps:gv('comps'),extraNotes:gv('extraNotes'),};
+}
+function collectSeriesData(){
+  if(!document.getElementById('seriesEnabled').checked)return null;
+  return{name:gv('seriesName')||'Untitled Series',world:gv('seriesWorld'),continuity:gv('seriesContinuity'),overarchingTheme:gv('seriesTheme'),prevBooks:gv('prevBooks'),bookCount:seriesBookCount,characters:chars.filter(c=>c.name.trim()),};
+}
+
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function randomiseAll(){
+  COMMON_FIELDS.forEach(section=>{section.fields.forEach(f=>{const el=document.getElementById(f.id);if(!el)return;if(f.type==='select')el.selectedIndex=Math.floor(Math.random()*el.options.length);else if(f.type==='range'){el.value=Math.floor(Math.random()*(f.max-f.min+1))+f.min;el.nextElementSibling.textContent=el.value;}});});
+  const gf=GENRE_FIELDS[activeGenre];
+  gf.fields.forEach(f=>{const el=document.getElementById(f.id);if(!el)return;if(f.type==='select')el.selectedIndex=Math.floor(Math.random()*el.options.length);else if(f.type==='range'){el.value=Math.floor(Math.random()*(f.max-f.min+1))+f.min;el.nextElementSibling.textContent=el.value;}});
+  activeGenre=GENRES[Math.floor(Math.random()*GENRES.length)].id;
+  renderGenreTabs();renderGenreFields();
+  selectedWC=WC_OPTIONS[Math.floor(Math.random()*WC_OPTIONS.length)].id;
+  document.getElementById('wcSection').innerHTML=renderWCSelector();
+  const n=2+Math.floor(Math.random()*4);
+  const shuffled=[...TABOO_OPTIONS].sort(()=>Math.random()-.5);
+  TABOO_OPTIONS.forEach(o=>{tabooState[o]=false;});
+  shuffled.slice(0,n).forEach(o=>{tabooState[o]=true;});
+  refreshTabooGrid();clearOutput();showToast('🎲 All fields randomised');
+}
+
+function clearOutput(){
+  document.getElementById('output').style.display='none';
+  document.getElementById('outputInner').innerHTML='';
+  document.getElementById('developPanel').style.display='none';
+  document.getElementById('docOutputArea').innerHTML='';
+  document.getElementById('docGrid').innerHTML='';
+  document.getElementById('developFooter').style.display='none';
+  developContext=null;developResults={};
+  seriesDevContexts=[];seriesDevResults={};activeSeriesBook=null;
+}
+function resetAll(){clearOutput();window.scrollTo({top:0,behavior:'smooth'});showToast('↺ Ready for a new book');}
+
+async function generateIdea(){
+  const params=collectParams();
+  const seriesData=collectSeriesData();
+  resetUsedTitles();
+  document.getElementById('output').style.display='block';
+  document.getElementById('outputInner').innerHTML=`<div class="ai-loading"><div class="spinner"></div><br>${seriesData?`Generating ${seriesData.bookCount}-book series brief...`:'Generating AI pitch...'}</div>`;
+  document.getElementById('output').scrollIntoView({behavior:'smooth',block:'start'});
+  const apiKey=getApiKey();
+  if(seriesData){
+    const cards=[];
+    for(let i=1;i<=seriesData.bookCount;i++){
+      const blurb=await fetchAIBlurb(params,seriesData,i,seriesData.bookCount,apiKey);
+      cards.push(renderCard(params,seriesData,i,seriesData.bookCount,blurb));
+    }
+    const charSummary=seriesData.characters.length>0?seriesData.characters.map(c=>`${c.name}${c.role?' ('+c.role+')':''}`).join(', '):'No named recurring characters';
+    document.getElementById('outputInner').innerHTML=
+      `<div class="series-out-header fade-in">📚 ${seriesData.name}<span style="font-size:.68rem;font-family:'DM Mono',monospace;font-style:normal;color:#7a9acc;font-weight:400;">${seriesData.bookCount} books · ${seriesData.continuity}</span></div>
+      <p style="font-size:.7rem;color:var(--muted);margin-bottom:1.3rem;line-height:1.7;">${seriesData.world?`<b>World:</b> ${seriesData.world} &nbsp;·&nbsp;`:''}<b>Cast:</b> ${charSummary}${seriesData.overarchingTheme?`&nbsp;·&nbsp;<b>Series theme:</b> ${seriesData.overarchingTheme}`:''}</p>
+      ${cards.join('')}
+      <div style="margin-top:.5rem;display:flex;gap:.5rem;">
+        <button class="btn-act" onclick="copyAll()">⎘ Copy Full Series Brief</button>
+        <button class="btn-act pdf-btn" onclick="exportPDF()">⬇ Export PDF</button>
+      </div>`;
+  }else{
+    const blurb=await fetchAIBlurb(params,null,null,null,apiKey);
+    document.getElementById('outputInner').innerHTML=renderCard(params,null,null,null,blurb);
+  }
+}
+
+async function fetchAIBlurb(params,seriesData,bookNum,totalBooks,apiKey){
+  if(!apiKey)return buildFallbackBlurb(params,seriesData,bookNum,totalBooks);
+  const prompt=buildAIPrompt(params,seriesData,bookNum,totalBooks);
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){const err=await res.json().catch(()=>({}));return`[API Error ${res.status}: ${err.error?.message||res.statusText}]\n\n`+buildFallbackBlurb(params,seriesData,bookNum,totalBooks);}
+    const data=await res.json();
+    return data.content?.map(b=>b.text||'').join('')||buildFallbackBlurb(params,seriesData,bookNum,totalBooks);
+  }catch(e){return`[Network error: ${e.message}]\n\n`+buildFallbackBlurb(params,seriesData,bookNum,totalBooks);}
+}
+
+function buildAIPrompt(p,seriesData,bookNum,totalBooks){
+  const{genre,protagonist,setting,scale,tone,theme,violence,moralComplexity,sexual,antagonist,relationship,structure,dark,wordCount,gVals,penName,publisher,market,styleNotes,comps,extraNotes}=p;
+  let gs='';const g=genre.id;
+  if(g==='espionage')gs=`Sub-genre: ${gVals.g_sub}. Agency: ${gVals.g_agency}. Tradecraft: ${gVals.g_tradecraft}. Loyalty: ${gVals.g_loyalty}. Tension: ${gVals.g_tension}/10.`;
+  else if(g==='thriller')gs=`Sub-genre: ${gVals.g_sub}. Threat: ${gVals.g_threat}. Twist: ${gVals.g_twist}.`;
+  else if(g==='romcom')gs=`Sub-genre: ${gVals.g_sub}. Meet-cute: ${gVals.g_meetcute}. Comedy: ${gVals.g_comedy}. Obstacle: ${gVals.g_obstacle}. Gesture: ${gVals.g_gesture}.`;
+  else if(g==='romance')gs=`Sub-genre: ${gVals.g_sub}. Trope: ${gVals.g_trope}. Heat: ${gVals.g_heat}/5. Ending: ${gVals.g_hea}.`;
+  else if(g==='romantasy')gs=`Sub-genre: ${gVals.g_sub}. Magic: ${gVals.g_magic}. Heat: ${gVals.g_heat}/5. Trope: ${gVals.g_trope}. Politics: ${gVals.g_politics}/10.`;
+  else if(g==='fantasy')gs=`Sub-genre: ${gVals.g_sub}. Magic: ${gVals.g_magic}. Politics: ${gVals.g_politics}/10. Chosen one: ${gVals.g_chosen}.`;
+  else if(g==='scifi')gs=`Sub-genre: ${gVals.g_sub}. Tech: ${gVals.g_tech}/10. Concept: ${gVals.g_concept}. Optimism: ${gVals.g_optimism}/10.`;
+  else if(g==='horror')gs=`Sub-genre: ${gVals.g_sub}. Threat: ${gVals.g_monster}. Gore: ${gVals.g_gore}/10. Survival: ${gVals.g_survival}.`;
+  else if(g==='mystery')gs=`Sub-genre: ${gVals.g_sub}. Crime: ${gVals.g_crime}. Investigator: ${gVals.g_detective}. Herrings: ${gVals.g_herrings}/10.`;
+  else if(g==='crime')gs=`Sub-genre: ${gVals.g_sub}. POV: ${gVals.g_pov_side}. Justice: ${gVals.g_morality}. Grit: ${gVals.g_grit}/10.`;
+  else if(g==='historical')gs=`Era: ${gVals.g_era}. Region: ${gVals.g_region}. Real figures: ${gVals.g_real}. Accuracy: ${gVals.g_accuracy}/10.`;
+  else if(g==='ya')gs=`Sub-genre: ${gVals.g_sub}. Coming-of-age: ${gVals.g_coming_of_age}. Stakes: ${gVals.g_stakes}/10. Tone: ${gVals.g_tone_ya}.`;
+  else if(g==='childrens')gs=`Age: ${gVals.g_age}. Sub-genre: ${gVals.g_sub}. Lesson: ${gVals.g_lesson}. Whimsy: ${gVals.g_whimsy}/10.`;
+  let sc='';
+  if(seriesData&&bookNum){
+    const pos=bookNum===1?'Book 1 — establish world and series conflict. End with a hook.':bookNum===totalBooks?`Book ${bookNum} — final instalment. All threads resolve.`:`Book ${bookNum} of ${totalBooks}. Deepen threads, raise stakes, end on a hook.`;
+    sc=`\n\nSERIES CONTEXT:\n- Series: ${seriesData.name}\n- World: ${seriesData.world||'per book settings'}\n- Continuity: ${seriesData.continuity}\n- Theme: ${seriesData.overarchingTheme||'none'}\n- ${pos}${seriesData.prevBooks?'\n- Previous: '+seriesData.prevBooks:''}`;
+    if(seriesData.characters.length>0)sc+='\n- Recurring: '+seriesData.characters.map(c=>`${c.name} (${c.role}${c.trait?' — '+c.trait:''})${c.arc?' | Arc: '+c.arc:''}`).join('; ');
+  }
+  const ac=[penName&&`Author: ${penName}`,publisher&&`Publisher: ${publisher}`,market&&`Market: ${market}`,styleNotes&&`Style: ${styleNotes}`,comps&&`Comps: ${comps}`,extraNotes&&`Notes: ${extraNotes}`].filter(Boolean).join('\n');
+  return `You are a professional literary pitch writer. Generate TWO things:\n\n1. TITLE: — evocative, marketable, unique in the series.\n2. BLURB: — 150-200 words back-cover copy. Gripping, hints at conflict, strong hook. No "In a world where..."\n\nPARAMETERS:\n- Genre: ${genre.label}\n- ${gs}\n- Protagonist: ${protagonist}\n- Setting: ${setting}\n- Scale: ${scale}\n- Tone: ${tone}\n- Theme: ${theme}\n- Violence: ${violence}/10\n- Moral complexity: ${moralComplexity}/10\n- Sexual content: ${sexual}\n- Antagonist: ${antagonist}\n- Central relationship: ${relationship}\n- Structure: ${structure}\n- Audience: ${p.audience}\n- Format: ${wordCount?wordCount.label+' ('+wordCount.range+' words)':'novel'}\n${dark.length>0?'- OFF-LIMITS topics: '+dark.join(', '):'- No content restrictions.'}\n${sc}\n${ac?'\nAUTHOR:\n'+ac:''}\n\nWrite TITLE and BLURB only. No preamble.`;
+}
+
+function buildFallbackBlurb(p,seriesData,bookNum,totalBooks){
+  const{genre,protagonist,setting,scale,tone,theme,violence,moralComplexity,antagonist,relationship,structure,dark,wordCount}=p;
+  const vd=+violence>=8?'viscerally violent':+violence>=5?'moderately violent':'largely non-violent';
+  const md=+moralComplexity>=8?'deeply morally ambiguous':+moralComplexity>=5?'ethically complex':'with clear moral stakes';
+  const dn=dark.length>0?` Banned: ${dark.slice(0,3).join(', ')}${dark.length>3?' and '+(dark.length-3)+' more':''}.`:' (No restrictions).';
+  const wn=wordCount?` Format: ${wordCount.label} (${wordCount.range} words).`:'';
+  let sn='';
+  if(seriesData&&bookNum){const pos=bookNum===1?'Opening book.':bookNum===totalBooks?'Final book.':'Book '+bookNum+' of '+totalBooks+'.';sn=` [${pos}]`;}
+  return `TITLE: [Set API key for AI title]\n\nBLURB:\nA ${tone.toLowerCase()} ${genre.label.toLowerCase()} following a ${protagonist.toLowerCase()} in a ${setting.toLowerCase()} at ${scale.toLowerCase()} scale. Central relationship: ${relationship.toLowerCase()}, facing ${antagonist.toLowerCase()}. Theme: ${theme.toLowerCase()}. Told ${structure.toLowerCase()}, ${vd}, ${md}.${wn}${dn}${sn}`;
+}
+
+const TITLE_STARTS={espionage:['The Last Agent','Dead Drop','The Defector','Eyes Only','The Sleeper','No Safe House','Cover of Darkness','The Moscow Exchange','The Lisbon Protocol','Cold Asset','The Vienna Burn','Ghost Station','The Kabul Directive','The Sarajevo Signal','The Warsaw Silence','Last Known Position','The Istanbul File'],thriller:['The Last','Before the','The Silent','Behind Closed','No Way Out','The Final','The Vanishing','After the Fall','The Burning','Into the Dark','The Reckoning','The Breaking Point','What He Knew','The Quiet Storm'],romcom:['Accidentally','The Wrong','Technically Speaking','Against All','Somehow','Not Exactly','Completely By Chance','The Inconvenient','Officially Unofficial','Entirely Your Fault','In Theory','Unexpectedly Yours'],romance:['When We','Before I','Everything About','The Way You','Always and','One More','After All This Time','The Space Between','Coming Home to','Still Yours'],romantasy:['A Court of','Crown of Thorns and','Daughter of','Shadow and','Heir of','Kingdom of the','Throne of','Bound by','Queen of Ash and','Realm of'],fantasy:['The Age of','Crown of','Shadows and','The Last','Of Blood and','The Blade of','Rise of','The War of','Children of the','Lords of','Ashes of'],scifi:['After the','The Long','Signal from','End of','The Memory of','Last Light from','The Colony at','Before the Silence','Station at the Edge of','Cascade Protocol'],horror:['In the Dark of','What Waits','The Hollow','Before You Wake','The Rot Beneath','Something in the','The Dread','What Crawls Below','The Waking Dark','Beneath the Quiet'],mystery:['The Case of','No One Saw','The Last Known','What the Dead','The Body at','The Disappearance of','Death at','The Missing Hours','Last Seen Alive','Nothing But the Truth'],crime:['The Price of','No Clean Hands','The Debt','Before the Law','The Score','The Long Con','Blood Money','One Last Job','The Setup','Running Out of Luck'],historical:['The Year of','Before the Storm','The Last Season of','Letters from','A Season in','The Last Days of','A Lady of','When Empires'],ya:['The Girl Who','After Everything','I Was Never','We Were','Before I Knew','Everything I Never','When We Were Infinite','What I Carry','Everything Between'],childrens:['The Amazing','One Day in','The Mystery of','Adventures of','The Incredible','The Secret of','The Magic','The Brave Little','Whiskers and the']};
+let _usedTitles=new Set();
+function resetUsedTitles(){_usedTitles=new Set();}
+function pickUniqueTitle(pool){const shuffled=[...pool].sort(()=>Math.random()-.5);for(const t of shuffled){if(!_usedTitles.has(t)){_usedTitles.add(t);return t;}}const fb=shuffled[0]+' '+(Math.floor(Math.random()*900)+100);_usedTitles.add(fb);return fb;}
+
+function renderCard(params,seriesData,bookNum,totalBooks,blurb){
+  const{genre,protagonist,setting,theme,pacing,worldbuilding,dark,wordCount,gVals,penName,publisher}=params;
+  let titleText='',blurbText=blurb||'';
+  if(blurb&&blurb.includes('TITLE:')){const tm=blurb.match(/TITLE:\s*(.+)/);const bm=blurb.match(/BLURB:\s*([\s\S]+)/);if(tm)titleText=tm[1].trim();if(bm)blurbText=bm[1].trim();}
+  if(!titleText){const pool=(TITLE_STARTS[genre.id]||['The Story of']).map(s=>s+' '+theme.split(' ')[0]);titleText=pickUniqueTitle(pool);}
+  const tags=buildTags(params,bookNum);
+  const charBlock=seriesData&&seriesData.characters.length>0?`<div class="out-chars"><strong>📚 Recurring Characters</strong>${seriesData.characters.map(c=>`<b>${c.name}</b>${c.role?' ('+c.role+')':''} ${c.trait?' — '+c.trait:''} ${c.arc?'<em>· Arc: '+c.arc+'</em>':''}`).join('<br>')}</div>`:'';
+  const authorBadge=penName?`<span class="out-badge author">${penName}${publisher?' · '+publisher:''}</span>`:'';
+  return `<div class="output-card ${seriesData?'s-card':''} fade-in">
+    <div class="out-badges"><span class="out-badge genre">${genre.icon} ${genre.label}</span>${bookNum?`<span class="out-badge booknum">Book ${bookNum} of ${totalBooks}</span>`:''}${authorBadge}</div>
+    <div class="out-title">${titleText}</div>
+    ${charBlock}
+    <div class="out-blurb">${blurbText}</div>
+    <div class="out-tags">${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    <div class="out-actions">
+      <button class="btn-act" onclick="copyCard(this)">⎘ Copy</button>
+      <button class="btn-act pdf-btn" onclick="exportPDF()">⬇ Export PDF</button>
+      <button class="btn-act" style="border-color:#c9943a;color:#c9943a;" onclick="openDevelopFromCard(this)">✍️ Develop This Book</button>
+    </div>
+  </div>`;
+}
+
+function buildTags(p,bookNum){
+  const tags=[p.genre.label,p.tone.split(' ')[0],p.audience,p.wordCount?p.wordCount.label:'',`Violence: ${p.violence}/10`,`Pacing: ${p.pacing}/10`,`Worldbuilding: ${p.worldbuilding}/10`].filter(Boolean);
+  if(p.dark.length>0)tags.push(`🚫 ${p.dark.length} topic${p.dark.length>1?'s':''} banned`);else tags.push('✓ No restrictions');
+  if(bookNum)tags.push(`Book ${bookNum}`);
+  const subKey=Object.keys(p.gVals).find(k=>k==='g_sub');
+  if(subKey&&p.gVals[subKey])tags.push(p.gVals[subKey].slice(0,28));
+  return tags;
+}
+
+function copyCard(btn){
+  const card=btn.closest('.output-card');
+  const badges=[...card.querySelectorAll('.out-badge')].map(b=>b.textContent.trim()).join(' | ');
+  const title=card.querySelector('.out-title')?.textContent?.trim()||'';
+  const chars=card.querySelector('.out-chars')?.innerText?.trim()||'';
+  const blurb=card.querySelector('.out-blurb')?.textContent?.trim()||'';
+  const tags=[...card.querySelectorAll('.tag')].map(t=>t.textContent).join(' | ');
+  const parts=[badges,`TITLE: ${title}`,chars?`CHARACTERS:\n${chars}`:'',`BLURB:\n${blurb}`,`TAGS: ${tags}`].filter(Boolean);
+  navigator.clipboard.writeText(parts.join('\n\n')).then(()=>{const o=btn.textContent;btn.textContent='✓ Copied!';setTimeout(()=>btn.textContent=o,2000);});
+}
+function copyAll(){
+  const header=document.querySelector('.series-out-header')?.textContent?.trim()||'';
+  const blocks=[...document.querySelectorAll('.output-card')].map(card=>{
+    const badges=[...card.querySelectorAll('.out-badge')].map(b=>b.textContent.trim()).join(' | ');
+    const title=card.querySelector('.out-title')?.textContent?.trim()||'';
+    const chars=card.querySelector('.out-chars')?.innerText?.trim()||'';
+    const blurb=card.querySelector('.out-blurb')?.textContent?.trim()||'';
+    const tags=[...card.querySelectorAll('.tag')].map(t=>t.textContent).join(' | ');
+    return[badges,`TITLE: ${title}`,chars?`CHARACTERS:\n${chars}`:'',`BLURB:\n${blurb}`,`TAGS: ${tags}`].filter(Boolean).join('\n');
+  });
+  navigator.clipboard.writeText(`SERIES BRIEF: ${header}\n${'═'.repeat(60)}\n\n`+blocks.join('\n\n'+'─'.repeat(40)+'\n\n')).then(()=>showToast('✓ Full series brief copied!'));
+}
+
+function exportPDF(){
+  const cards=[...document.querySelectorAll('.output-card')];
+  if(!cards.length)return;
+  const seriesHeader=document.querySelector('.series-out-header')?.textContent?.trim()||'';
+  let html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Book Brief</title><style>@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Mono:wght@400&display=swap');body{font-family:'DM Mono',monospace;font-size:10pt;color:#1a1008;max-width:680px;margin:0 auto;padding:32px;}.series-h{font-family:'Playfair Display',serif;font-size:14pt;color:#3a6bb5;border-bottom:2px solid #a8c0e8;padding-bottom:6px;margin-bottom:14px;}.card{border-left:4px solid #b5451b;padding:14px 18px;margin-bottom:20px;background:#faf4ec;page-break-inside:avoid;}.card.sc{border-left-color:#3a6bb5;}.badges{font-size:7pt;letter-spacing:.1em;text-transform:uppercase;color:#b5451b;margin-bottom:8px;}.title{font-family:'Playfair Display',serif;font-size:14pt;font-weight:700;margin-bottom:8px;}.blurb{font-size:9.5pt;line-height:1.7;color:#5a4a38;white-space:pre-wrap;border-top:1px dashed #c8b89a;padding-top:8px;margin-bottom:8px;}.chars{font-size:8.5pt;color:#3a6bb5;background:#eef3fc;padding:6px 10px;margin-bottom:8px;border:1px solid #a8c0e8;}.tags{font-size:7pt;color:#7a6a58;}.tag{display:inline-block;background:#ede0cc;border:1px solid #c8b89a;padding:1px 6px;margin:1px;border-radius:1px;}@media print{body{padding:0;}.card{page-break-inside:avoid;}}</style></head><body>`;
+  if(seriesHeader)html+=`<div class="series-h">📚 ${seriesHeader}</div>`;
+  cards.forEach(card=>{
+    const isSeries=card.classList.contains('s-card');
+    const badges=[...card.querySelectorAll('.out-badge')].map(b=>b.textContent.trim()).join(' &nbsp;·&nbsp; ');
+    const title=card.querySelector('.out-title')?.textContent?.trim()||'';
+    const chars=card.querySelector('.out-chars')?.innerText?.trim()||'';
+    const blurb=card.querySelector('.out-blurb')?.textContent?.trim()||'';
+    const tags=[...card.querySelectorAll('.tag')].map(t=>`<span class="tag">${t.textContent}</span>`).join('');
+    html+=`<div class="card ${isSeries?'sc':''}"><div class="badges">${badges}</div><div class="title">${title}</div>${chars?`<div class="chars"><b>Recurring Characters:</b><br>${chars.replace(/\n/g,'<br>')}</div>`:''}<div class="blurb">${blurb}</div><div class="tags">${tags}</div></div>`;
+  });
+  html+=`</body></html>`;
+  const win=window.open('','_blank');win.document.write(html);win.document.close();setTimeout(()=>win.print(),600);
+}
+
+// ── PRESETS ───────────────────────────────────────────────
+function savePreset(){document.getElementById('presetModal').classList.remove('hidden');document.getElementById('presetNameInput').focus();}
+function closePresetModal(){document.getElementById('presetModal').classList.add('hidden');}
+function confirmSavePreset(){
+  const name=document.getElementById('presetNameInput').value.trim();
+  if(!name){alert('Please enter a preset name.');return;}
+  const fieldSnapshot={};
+  COMMON_FIELDS.forEach(s=>s.fields.forEach(f=>{const el=document.getElementById(f.id);if(el)fieldSnapshot[f.id]=el.value;}));
+  Object.values(GENRE_FIELDS).forEach(gf=>gf.fields.forEach(f=>{const el=document.getElementById(f.id);if(el)fieldSnapshot[f.id]=el.value;}));
+  const preset={id:Date.now(),name,genre:activeGenre,wordCount:selectedWC,tabooState:{...tabooState},tabooDefaults:[...tabooDefaults],fieldSnapshot,seriesEnabled:document.getElementById('seriesEnabled').checked,seriesData:collectSeriesData(),seriesBookCount,chars:JSON.parse(JSON.stringify(chars)),author:{penName:gv('penName'),publisher:gv('publisher'),market:gv('market'),styleNotes:gv('styleNotes'),comps:gv('comps'),extraNotes:gv('extraNotes')}};
+  presets.push(preset);savePresets();renderPresets();closePresetModal();document.getElementById('presetNameInput').value='';showToast(`✓ Preset "${name}" saved`);
+}
+function loadPreset(id){
+  const p=presets.find(x=>x.id===id);if(!p)return;
+  activeGenre=p.genre;selectedWC=p.wordCount;tabooState={...p.tabooState};tabooDefaults=new Set(p.tabooDefaults||[]);seriesBookCount=p.seriesBookCount||3;chars=JSON.parse(JSON.stringify(p.chars||[]));charId=chars.reduce((m,c)=>Math.max(m,c.id),0);
+  renderGenreTabs();renderCommonFields();renderGenreFields();
+  setTimeout(()=>{
+    if(p.fieldSnapshot)Object.entries(p.fieldSnapshot).forEach(([id,val])=>{const el=document.getElementById(id);if(el){el.value=val;if(el.type==='range'&&el.nextElementSibling)el.nextElementSibling.textContent=val;}});
+    if(p.author)Object.entries(p.author).forEach(([k,v])=>{const el=document.getElementById(k);if(el)el.value=v||'';});
+    document.getElementById('seriesEnabled').checked=p.seriesEnabled||false;toggleSeriesConfig();
+    if(p.seriesData){document.getElementById('seriesName').value=p.seriesData.name||'';document.getElementById('seriesWorld').value=p.seriesData.world||'';document.getElementById('seriesContinuity').value=p.seriesData.continuity||'';document.getElementById('seriesTheme').value=p.seriesData.overarchingTheme||'';document.getElementById('prevBooks').value=p.seriesData.prevBooks||'';}
+    document.getElementById('bookCnt').textContent=seriesBookCount;renderCharList();refreshTabooGrid();document.getElementById('wcSection').innerHTML=renderWCSelector();
+  },50);
+  showToast(`✓ Preset "${p.name}" loaded`);
+}
+function deletePreset(id,e){e.stopPropagation();presets=presets.filter(p=>p.id!==id);savePresets();renderPresets();}
+function savePresets(){try{localStorage.setItem('bookgen_presets',JSON.stringify(presets));}catch(e){}}
+function renderPresets(){
+  const grid=document.getElementById('presetGrid');const hint=document.getElementById('noPresetsHint');
+  if(!presets.length){grid.innerHTML='';hint.style.display='block';return;}
+  hint.style.display='none';
+  grid.innerHTML=presets.map(p=>`<div class="preset-chip" onclick="loadPreset(${p.id})">${GENRES.find(g=>g.id===p.genre)?.icon||''} ${p.name}<span class="del-chip" onclick="deletePreset(${p.id},event)" title="Delete">✕</span></div>`).join('');
+}
+
+function exportJSON(){
+  const data={_version:2,genre:activeGenre,wordCount:selectedWC,tabooState,tabooDefaults:[...tabooDefaults],seriesEnabled:document.getElementById('seriesEnabled').checked,seriesBookCount,seriesData:collectSeriesData(),chars,author:{penName:gv('penName'),publisher:gv('publisher'),market:gv('market'),styleNotes:gv('styleNotes'),comps:gv('comps'),extraNotes:gv('extraNotes')},presets};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`bookgen-${new Date().toISOString().slice(0,10)}.json`;a.click();
+}
+function importJSON(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(d.presets){presets=d.presets;savePresets();renderPresets();}
+      if(d.tabooDefaults)tabooDefaults=new Set(d.tabooDefaults);
+      if(d.tabooState)tabooState=d.tabooState;
+      if(d.genre)activeGenre=d.genre;
+      if(d.wordCount)selectedWC=d.wordCount;
+      if(d.chars)chars=d.chars;
+      if(d.seriesBookCount)seriesBookCount=d.seriesBookCount;
+      renderGenreTabs();renderCommonFields();renderGenreFields();
+      setTimeout(()=>{
+        if(d.author)Object.entries(d.author).forEach(([k,v])=>{const el=document.getElementById(k);if(el)el.value=v||'';});
+        if(d.seriesEnabled){document.getElementById('seriesEnabled').checked=true;toggleSeriesConfig();}
+        if(d.seriesData){document.getElementById('seriesName').value=d.seriesData.name||'';document.getElementById('seriesWorld').value=d.seriesData.world||'';}
+        document.getElementById('bookCnt').textContent=seriesBookCount;renderCharList();refreshTabooGrid();document.getElementById('wcSection').innerHTML=renderWCSelector();
+      },50);
+      showToast('✓ Config imported');
+    }catch(err){alert('Import failed: '+err.message);}
+  };
+  reader.readAsText(file);e.target.value='';
+}
+
+function openApiModal(){document.getElementById('apiModal').classList.remove('hidden');}
+function closeApiModal(){document.getElementById('apiModal').classList.add('hidden');}
+function saveApiKey(){
+  const key=document.getElementById('apiKeyInput').value.trim();
+  try{localStorage.setItem('bookgen_apikey',key);}catch(e){}
+  try{sessionStorage.setItem('bookgen_apikey',key);}catch(e){}
+  closeApiModal();updateApiStatus(key);
+  const note=document.getElementById('apiNote');
+  if(key){note.style.background='#edf7f1';note.style.borderColor='#8ecbaa';note.innerHTML='<b style="color:var(--green)">✓ API Key set.</b> AI pitch generation is active. Using claude-sonnet-4-20250514.';}
+  else{note.style.background='';note.style.borderColor='';note.innerHTML='<b>AI Pitch Generation:</b> Set your Anthropic API key (button top-right) to enable full AI-written back-cover blurbs.';}
+  showToast(key?'✓ API key saved':'API key cleared');
+}
+function updateApiStatus(key){
+  const el=document.getElementById('apiStatus');if(!el)return;
+  if(key){el.style.display='inline-block';el.style.background='#edf7f1';el.style.color='#2a7a4a';el.style.border='1px solid #8ecbaa';el.textContent='✓ AI Active';}
+  else el.style.display='none';
+}
+function getApiKey(){return localStorage.getItem('bookgen_apikey')||sessionStorage.getItem('bookgen_apikey')||'';}
+
+function showToast(msg){
+  let t=document.getElementById('toast');
+  if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ink);color:var(--light);font-family:DM Mono,monospace;font-size:.7rem;letter-spacing:.08em;padding:.55rem 1.1rem;border-radius:3px;z-index:9999;transition:opacity .3s;opacity:0;';document.body.appendChild(t);}
+  t.textContent=msg;t.style.opacity='1';clearTimeout(t._timer);t._timer=setTimeout(()=>{t.style.opacity='0';},2500);
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeApiModal();closePresetModal();closeCloudModal();}
+  if(e.key==='Enter'&&!document.getElementById('presetModal').classList.contains('hidden'))confirmSavePreset();
+});
+
+// ══════════════════════════════════════════════════════════
+//  DEVELOP THIS BOOK — state
+// ══════════════════════════════════════════════════════════
+let developContext=null;
+let developResults={};
+let seriesDevContexts=[];
+let seriesDevResults={};
+let activeSeriesBook=null;
+
+const DOC_SUITE=[
+  {id:'synopsis_short',icon:'📄',label:'1-Page Synopsis',desc:'A single-page narrative summary for agents & publishers',prompt:(ctx)=>`You are a professional literary editor. Write a polished 1-page synopsis (350–450 words) for the following book. A synopsis tells the FULL story including the ending — it is not a back-cover blurb. Write in present tense, third person. Cover: protagonist and their goal, the inciting incident, key plot turns, the climax, and the resolution. Be specific and concrete.\n\n${ctx}\n\nReturn only the synopsis text with no preamble or labels.`},
+  {id:'synopsis_long',icon:'📋',label:'3-Page Synopsis',desc:'Extended synopsis with full plot structure and arc detail',prompt:(ctx)=>`You are a professional literary editor. Write a detailed 3-page synopsis (900–1100 words) for the following book. Write in present tense, third person. Structure:\n\nACT ONE — Setup, protagonist, world, inciting incident\nACT TWO — Rising action, complications, midpoint, darkest moment\nACT THREE — Climax, resolution, character arc completion\n\nBe specific about plot events, motivations, and emotional beats. Include the ending.\n\n${ctx}\n\nReturn only the synopsis with clear section headers. No preamble.`},
+  {id:'chapter_outline',icon:'🗂️',label:'Chapter Outline',desc:'Beat-by-beat chapter structure with scene goals',prompt:(ctx)=>`You are a professional story editor. Create a detailed chapter-by-chapter outline for the following book.\n\nFor each chapter:\n- Chapter number and working title\n- POV character\n- Setting / location\n- Key events (2–4 bullet points)\n- Scene goal, conflict, outcome\n- Emotional beat\n\nAim for realistic chapter count (short story = 5–8, novella = 10–15, novel = 20–30, epic = 30–45).\n\n${ctx}\n\nFormat clearly. No preamble.`},
+  {id:'character_profiles',icon:'👤',label:'Character Profiles',desc:'Full profiles for protagonist, antagonist & key cast',prompt:(ctx)=>`You are a professional story editor. Create detailed character profiles for: 1. Protagonist, 2. Antagonist, 3. 2–3 key supporting characters.\n\nFor each: full name, age/appearance, background, core personality traits, primary motivation, internal flaw, external goal, character arc, voice/speech style (one example line), relationships.\n\n${ctx}\n\nFormat clearly with a header for each character. No preamble.`},
+  {id:'world_bible',icon:'🌍',label:'World Bible',desc:'Setting rules, history, tone & world logic notes',prompt:(ctx)=>`You are a professional world-builder. Create a world bible for the following book with sections:\n- OVERVIEW\n- HISTORY & CONTEXT\n- GEOGRAPHY & LOCATIONS\n- SOCIETY & CULTURE\n- RULES & SYSTEMS\n- TONE & ATMOSPHERE\n- WHAT MAKES THIS WORLD UNIQUE\n- THINGS THAT ARE FORBIDDEN OR IMPOSSIBLE\n\n${ctx}\n\nFormat with clear section headers. No preamble.`},
+  {id:'query_letter',icon:'✉️',label:'Query Letter',desc:'Submission-ready letter for literary agents',prompt:(ctx)=>`You are a literary agent assistant. Write a professional query letter (350–450 words) with: 1. HOOK (1–2 sentences), 2. PITCH (2–3 paragraphs — story, stakes, what's distinctive; do NOT reveal ending), 3. BOOK DETAILS (title, genre, word count, comps, market fit), 4. AUTHOR BIO.\n\n${ctx}\n\nReturn only the query letter formatted as a proper letter. No preamble.`},
+  {id:'first_chapter',icon:'📖',label:'Opening Chapter',desc:"A full draft of Chapter 1 in the book's voice",prompt:(ctx)=>`You are a skilled fiction writer. Write a complete, polished opening chapter (1,200–1,800 words) for the following book. Begin in media res or with a compelling scene. Establish protagonist voice, hint at central conflict, end with a hook. Match the tone and pacing indicated.\n\n${ctx}\n\nReturn only the chapter text with "CHAPTER ONE" as header. No preamble.`},
+  {id:'cover_art_brief',icon:'🎨',label:'Cover Art Brief',desc:'Detailed visual brief for designers or AI image tools',prompt:(ctx)=>`You are a book cover art director. Write a detailed cover art brief with sections: CONCEPT, MOOD & ATMOSPHERE, CENTRAL IMAGE / FOCAL POINT, TYPOGRAPHY STYLE, COMPARABLE COVERS (3–4 real books), WHAT TO AVOID, MIDJOURNEY PROMPT (100–150 words ready-to-use).\n\n${ctx}\n\nFormat with clear section headers. No preamble.`},
+  {id:'marketing_copy',icon:'📣',label:'Marketing Copy',desc:'Social posts, Amazon description & press release',prompt:(ctx)=>`You are a book marketing specialist. Write: AMAZON / RETAILER DESCRIPTION (300–400 words), TAGLINE OPTIONS (5 options, under 12 words each), SOCIAL MEDIA POSTS (Instagram 150w, Twitter/X under 280 chars, Facebook 100w, TikTok BookTok hook), PRESS RELEASE EXCERPT (150 words), NEWSLETTER ANNOUNCEMENT (200 words).\n\n${ctx}\n\nFormat with clear bold headers. No preamble.`},
+  {id:'sensitivity_notes',icon:'🛡️',label:'Sensitivity Notes',desc:'Content guidance, rep considerations & reader advisories',prompt:(ctx)=>`You are a sensitivity reader and editorial consultant. Produce a sensitivity and content advisory document with: CONTENT WARNINGS (full list), REPRESENTATION CONSIDERATIONS, POTENTIAL SENSITIVITIES BY GENRE, RESEARCH RECOMMENDATIONS, READER ADVISORIES (age rating, platform flags), EDITORIAL NOTES.\n\n${ctx}\n\nFormat with clear headers. No preamble.`},
+];
+
+function buildDevelopContext(cardEl){
+  const title=cardEl.querySelector('.out-title')?.textContent?.trim()||'';
+  const blurb=cardEl.querySelector('.out-blurb')?.textContent?.trim()||'';
+  const badges=[...cardEl.querySelectorAll('.out-badge')].map(b=>b.textContent.trim()).join(' | ');
+  const chars=cardEl.querySelector('.out-chars')?.innerText?.trim()||'';
+  const tags=[...cardEl.querySelectorAll('.tag')].map(t=>t.textContent.trim()).join(', ');
+  const penName=gv('penName'),styleNotes=gv('styleNotes'),comps=gv('comps'),extraNotes=gv('extraNotes'),market=gv('market');
+  let ctx=`BOOK BRIEF:\nTitle: ${title}\n${badges}\nTags: ${tags}\n\n${blurb}`;
+  if(chars)ctx+=`\n\nCharacters:\n${chars}`;
+  const banned=getTabooActive();
+  if(banned.length>0)ctx+=`\n\nSTRICTLY OFF-LIMITS: ${banned.join(', ')}`;
+  else ctx+=`\n\nContent restrictions: None.`;
+  if(penName)ctx+=`\n\nAuthor: ${penName}`;
+  if(market)ctx+=`\nTarget market: ${market}`;
+  if(styleNotes)ctx+=`\nStyle notes: ${styleNotes}`;
+  if(comps)ctx+=`\nComparable titles: ${comps}`;
+  if(extraNotes)ctx+=`\nAdditional notes: ${extraNotes}`;
+  return ctx;
+}
+
+// ══════════════════════════════════════════════════════════
+//  DEVELOP THIS SERIES
+// ══════════════════════════════════════════════════════════
+
+function openDevelopPanel(cardEl,bookLabel){
+  developContext=buildDevelopContext(cardEl);
+  developResults={};
+  document.getElementById('developBookLabel').textContent=bookLabel||'Single Book';
+  const allCards=document.querySelectorAll('.output-card');
+  const seriesBtn=document.getElementById('btnGenSeries');
+  const tabBar=document.getElementById('seriesTabBar');
+  if(allCards.length>1){
+    seriesBtn.style.display='inline-block';
+    buildSeriesContexts();
+    renderSeriesTabBar();
+  }else{
+    seriesBtn.style.display='none';
+    tabBar.style.display='none';
+    seriesDevContexts=[];seriesDevResults={};activeSeriesBook=null;
+  }
+  renderDocButtons();
+  document.getElementById('docOutputArea').innerHTML='';
+  document.getElementById('developFooter').style.display='none';
+  resetGenAllBtn();
+  const panel=document.getElementById('developPanel');
+  panel.style.display='block';
+  setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+function buildSeriesContexts(){
+  seriesDevContexts=[];seriesDevResults={};activeSeriesBook=null;
+  document.querySelectorAll('.output-card').forEach((card,idx)=>{
+    const bookNum=idx+1;
+    const titleEl=card.querySelector('.out-title');
+    const title=titleEl?titleEl.textContent.trim():'Book '+bookNum;
+    seriesDevContexts.push({bookNum,title,context:buildDevelopContext(card)});
+    seriesDevResults[bookNum]={};
+  });
+}
+
+function renderSeriesTabBar(){
+  const tabBar=document.getElementById('seriesTabBar');
+  tabBar.style.display='flex';
+  tabBar.innerHTML=seriesDevContexts.map(s=>{
+    const allDone=DOC_SUITE.every(d=>seriesDevResults[s.bookNum]&&seriesDevResults[s.bookNum][d.id]);
+    return`<button class="series-book-tab ${allDone?'done':''} ${activeSeriesBook===s.bookNum?'active':''}"
+      onclick="switchSeriesBook(${s.bookNum})" id="seriestab_${s.bookNum}">
+      ${allDone?'✓':'📖'} Book ${s.bookNum}
+    </button>`;
+  }).join('');
+}
+
+function switchSeriesBook(bookNum){
+  activeSeriesBook=bookNum;
+  const entry=seriesDevContexts.find(s=>s.bookNum===bookNum);
+  if(!entry)return;
+  developContext=entry.context;
+  developResults=seriesDevResults[bookNum]||{};
+  document.getElementById('developBookLabel').textContent=`Book ${bookNum}: ${entry.title.slice(0,45)}`;
+  renderDocButtons();
+  document.getElementById('docOutputArea').innerHTML='';
+  DOC_SUITE.forEach(doc=>{
+    const result=developResults[doc.id];
+    if(result)renderDocResult(doc,result.content);
+  });
+  if(Object.keys(developResults).length)document.getElementById('developFooter').style.display='flex';
+  renderSeriesTabBar();
+}
+
+function renderDocButtons(){
+  document.getElementById('docGrid').innerHTML=DOC_SUITE.map(doc=>{
+    const isDone=!!developResults[doc.id];
+    return`<button class="doc-btn ${isDone?'done':''}" id="docbtn_${doc.id}" onclick="generateDoc('${doc.id}')">
+      <span class="doc-icon">${isDone?'✓':doc.icon}</span>
+      <span class="doc-label">${doc.label}</span>
+      <span class="doc-desc">${isDone?'Click to regenerate':doc.desc}</span>
+    </button>`;
+  }).join('');
+}
+
+function resetGenAllBtn(){
+  const btn=document.getElementById('btnGenAll');
+  if(btn){btn.disabled=false;btn.classList.remove('running');btn.textContent='✦ Generate All Documents';}
+  const status=document.getElementById('genAllStatus');if(status)status.textContent='';
+  const bar=document.getElementById('genAllBar');if(bar)bar.style.width='0%';
+  const progress=document.getElementById('genAllProgress');if(progress)progress.style.display='none';
+}
+
+async function generateAllDocs(){
+  if(!developContext)return;
+  const btn=document.getElementById('btnGenAll');
+  const status=document.getElementById('genAllStatus');
+  const bar=document.getElementById('genAllBar');
+  const progress=document.getElementById('genAllProgress');
+  btn.disabled=true;btn.classList.add('running');btn.textContent='⏳ Generating All…';
+  progress.style.display='block';bar.style.width='0%';
+  const total=DOC_SUITE.length;let done=0;
+  for(const doc of DOC_SUITE){
+    status.textContent=`${done+1} of ${total} — writing ${doc.label}…`;
+    await generateDoc(doc.id);done++;
+    bar.style.width=Math.round((done/total)*100)+'%';
+  }
+  btn.disabled=false;btn.classList.remove('running');btn.textContent='✓ All Documents Generated';
+  status.textContent=`${total} documents ready`;
+  setTimeout(()=>{btn.textContent='✦ Regenerate All';},3000);
+  const first=document.getElementById('docresult_'+DOC_SUITE[0].id);
+  if(first)first.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+async function generateSeriesAllDocs(){
+  const seriesBtn=document.getElementById('btnGenSeries');
+  const genAllBtn=document.getElementById('btnGenAll');
+  const status=document.getElementById('genAllStatus');
+  const bar=document.getElementById('genAllBar');
+  const progress=document.getElementById('genAllProgress');
+  if(!seriesDevContexts.length)buildSeriesContexts();
+  seriesBtn.disabled=true;seriesBtn.textContent='⏳ Generating Series…';
+  genAllBtn.disabled=true;progress.style.display='block';bar.style.width='0%';
+  const totalSteps=seriesDevContexts.length*DOC_SUITE.length;let done=0;
+  for(const entry of seriesDevContexts){
+    activeSeriesBook=entry.bookNum;developContext=entry.context;
+    developResults=seriesDevResults[entry.bookNum];
+    document.getElementById('developBookLabel').textContent=`Book ${entry.bookNum}: ${entry.title.slice(0,45)}`;
+    renderDocButtons();document.getElementById('docOutputArea').innerHTML='';renderSeriesTabBar();
+    for(const doc of DOC_SUITE){
+      status.textContent=`Book ${entry.bookNum} of ${seriesDevContexts.length} — ${doc.label}…`;
+      await generateDoc(doc.id,true);
+      seriesDevResults[entry.bookNum][doc.id]=developResults[doc.id];
+      done++;bar.style.width=Math.round((done/totalSteps)*100)+'%';
+    }
+    renderSeriesTabBar();
+  }
+  switchSeriesBook(seriesDevContexts[0].bookNum);
+  seriesBtn.disabled=false;seriesBtn.textContent='✓ Series Generated';genAllBtn.disabled=false;
+  status.textContent=`All ${seriesDevContexts.length} books — ${DOC_SUITE.length} docs each — complete.`;
+  setTimeout(()=>{seriesBtn.textContent='📚 Develop Entire Series';},4000);
+  document.getElementById('developFooter').style.display='flex';
+}
+
+function renderDocResult(doc,content){
+  const docId=doc.id;
+  let resultEl=document.getElementById('docresult_'+docId);
+  if(!resultEl){resultEl=document.createElement('div');resultEl.id='docresult_'+docId;resultEl.className='doc-result';document.getElementById('docOutputArea').appendChild(resultEl);}
+  resultEl.innerHTML=`<div class="doc-result-header">
+    <div class="doc-result-title">${doc.icon} ${doc.label}</div>
+    <div class="doc-result-actions">
+      <button class="doc-act-btn" onclick="copyDoc('${docId}')">⎘ Copy</button>
+      <button class="doc-act-btn pdf-act" onclick="exportSingleDocPDF('${docId}')">⬇ PDF</button>
+    </div>
+  </div>
+  <div class="doc-content" id="doccontent_${docId}">${formatDocContent(content)}</div>`;
+}
+
+async function generateDoc(docId,silent){
+  silent=silent||false;
+  const doc=DOC_SUITE.find(d=>d.id===docId);
+  if(!doc||!developContext)return;
+  const apiKey=getApiKey();
+  const btn=document.getElementById('docbtn_'+docId);
+  if(btn){btn.classList.add('running');btn.innerHTML=`<span class="doc-icon">${doc.icon}</span><span class="doc-label">Generating...</span><span class="doc-desc">Please wait</span>`;}
+  let resultEl=document.getElementById('docresult_'+docId);
+  if(!resultEl){resultEl=document.createElement('div');resultEl.id='docresult_'+docId;resultEl.className='doc-result';document.getElementById('docOutputArea').appendChild(resultEl);}
+  resultEl.innerHTML=`<div class="doc-loading"><span class="spinner"></span> Writing ${doc.label}...</div>`;
+  if(!silent)resultEl.scrollIntoView({behavior:'smooth',block:'nearest'});
+  let content='';
+  if(!apiKey){content='⚠ No API key set. Please click "Set API Key" to enable AI document generation.';}
+  else{
+    const prompt=doc.prompt(developContext);
+    try{
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})});
+      if(!res.ok){const err=await res.json().catch(()=>({}));content=`API Error ${res.status}: ${err.error?.message||res.statusText}`;}
+      else{const data=await res.json();content=data.content?.map(b=>b.text||'').join('')||'No response received.';}
+    }catch(e){content='Network error: '+e.message;}
+  }
+  developResults[docId]={label:doc.label,icon:doc.icon,content};
+  renderDocResult(doc,content);
+  if(btn){
+    btn.classList.remove('running');btn.classList.add('done');
+    btn.innerHTML=`<span class="doc-icon">✓</span><span class="doc-label">${doc.label}</span><span class="doc-desc">Click to regenerate</span>`;
+    btn.onclick=()=>{btn.classList.remove('done');btn.innerHTML=`<span class="doc-icon">${doc.icon}</span><span class="doc-label">${doc.label}</span><span class="doc-desc">${doc.desc}</span>`;generateDoc(docId);};
+  }
+  document.getElementById('developFooter').style.display='flex';
+}
+
+function formatDocContent(text){
+  return text.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/^#{1,2}\s+(.+)$/gm,'<h3>$1</h3>').replace(/^#{3,4}\s+(.+)$/gm,'<h4>$1</h4>').replace(/^[A-Z][A-Z\s\/&]+:$/gm,m=>`<h4>${m}</h4>`).replace(/\n{3,}/g,'\n\n');
+}
+function copyDoc(docId){
+  const result=developResults[docId];if(!result)return;
+  const el=document.getElementById('doccontent_'+docId);
+  const text=el?el.innerText:result.content;
+  navigator.clipboard.writeText(`${result.label.toUpperCase()}\n${'─'.repeat(40)}\n\n${text}`).then(()=>showToast(`✓ ${result.label} copied`));
+}
+function copyAllDocs(){
+  const parts=Object.entries(developResults).map(([id,r])=>{const el=document.getElementById('doccontent_'+id);const text=el?el.innerText:r.content;return`${r.icon} ${r.label.toUpperCase()}\n${'═'.repeat(50)}\n\n${text}`;});
+  if(!parts.length){showToast('No documents generated yet');return;}
+  const title=document.getElementById('developBookLabel').textContent;
+  navigator.clipboard.writeText(`BOOK DEVELOPMENT DOCUMENTS — ${title}\n\n`+parts.join('\n\n'+'─'.repeat(60)+'\n\n')).then(()=>showToast('✓ All documents copied'));
+}
+function exportSingleDocPDF(docId){const result=developResults[docId];if(!result)return;const el=document.getElementById('doccontent_'+docId);const html=el?el.innerHTML:result.content.replace(/\n/g,'<br>');openDocPDF(`${result.icon} ${result.label}`,document.getElementById('developBookLabel').textContent,html);}
+function exportDocsPDF(){
+  if(!Object.keys(developResults).length){showToast('Generate some documents first');return;}
+  const bookLabel=document.getElementById('developBookLabel').textContent;
+  let combinedHtml='';
+  Object.entries(developResults).forEach(([id,r])=>{const el=document.getElementById('doccontent_'+id);const html=el?el.innerHTML:r.content.replace(/\n/g,'<br>');combinedHtml+=`<div class="doc-section"><div class="doc-sec-title">${r.icon} ${r.label}</div><div class="doc-body">${html}</div></div>`;});
+  openDocPDF('Book Development Documents',bookLabel,combinedHtml,true);
+}
+function openDocPDF(title,subtitle,bodyHtml,multi){
+  multi=multi||false;
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title><style>@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Mono:wght@400&display=swap');body{font-family:'DM Mono',monospace;font-size:10.5pt;color:#1a1008;max-width:700px;margin:0 auto;padding:36px 32px;}.cover{border-bottom:3px solid #b5451b;margin-bottom:28px;padding-bottom:16px;}.cover-title{font-family:'Playfair Display',serif;font-size:18pt;font-weight:900;margin-bottom:4px;}.cover-sub{font-size:8pt;letter-spacing:.2em;text-transform:uppercase;color:#7a6a58;}h3{font-family:'Playfair Display',serif;font-size:13pt;margin:16px 0 6px;}h4{font-size:8pt;letter-spacing:.15em;text-transform:uppercase;color:#b5451b;margin:14px 0 4px;border-bottom:1px solid #c8b89a;padding-bottom:3px;}p,div{line-height:1.75;}.doc-section{page-break-before:${multi?'always':'auto'};margin-bottom:30px;}.doc-section:first-child{page-break-before:auto;}.doc-sec-title{font-family:'Playfair Display',serif;font-size:14pt;font-weight:700;color:#3a6bb5;border-bottom:2px solid #a8c0e8;padding-bottom:6px;margin-bottom:16px;}.doc-body{font-size:10pt;line-height:1.8;}strong{font-weight:600;}@media print{body{padding:0;}}</style></head><body><div class="cover"><div class="cover-title">${title}</div><div class="cover-sub">${subtitle}</div></div><div class="doc-body">${bodyHtml}</div></body></html>`);
+  win.document.close();setTimeout(()=>win.print(),700);
+}
+
+function openDevelopFromCard(btn){
+  const card=btn.closest('.output-card');
+  const bookNumEl=card.querySelector('.out-badge.booknum');
+  const titleEl=card.querySelector('.out-title');
+  const label=bookNumEl?bookNumEl.textContent.trim():(titleEl?titleEl.textContent.trim().slice(0,40):'Single Book');
+  openDevelopPanel(card,label);
+}
+
+// ══════════════════════════════════════════════════════════
+//  CLOUD EXPORT / EXPORT MD
+// ══════════════════════════════════════════════════════════
+
+function openCloudModal(){
+  const label=document.getElementById('developBookLabel').textContent.trim().replace(/[^a-z0-9\s-]/gi,'').replace(/\s+/g,'-').toLowerCase().slice(0,50);
+  document.getElementById('cloudFilename').value=label+'-docs.md';
+  try{const gcid=localStorage.getItem('bookgen_googleClientId');const msid=localStorage.getItem('bookgen_msClientId');if(gcid)document.getElementById('googleClientId').value=gcid;if(msid)document.getElementById('msClientId').value=msid;}catch(e){}
+  document.getElementById('cloudModal').classList.remove('hidden');
+}
+function closeCloudModal(){document.getElementById('cloudModal').classList.add('hidden');}
+
+function buildMDContent(){
+  const label=document.getElementById('developBookLabel').textContent.trim();
+  const hasSeriesData=seriesDevContexts.length>1&&Object.keys(seriesDevResults).some(k=>Object.keys(seriesDevResults[k]).length>0);
+  if(hasSeriesData){
+    let md=`# BOOK DEVELOPMENT DOCUMENTS\n## ${label}\n\n---\n\n`;
+    seriesDevContexts.forEach(entry=>{
+      const bookResults=seriesDevResults[entry.bookNum];
+      if(!bookResults||!Object.keys(bookResults).length)return;
+      md+=`# BOOK ${entry.bookNum}: ${entry.title}\n\n`;
+      DOC_SUITE.forEach(doc=>{
+        const r=bookResults[doc.id];if(!r)return;
+        md+=`## ${doc.icon} ${doc.label}\n\n${r.content}\n\n---\n\n`;
+      });
+    });
+    return md;
+  }
+  if(!Object.keys(developResults).length)return null;
+  let md=`# BOOK DEVELOPMENT DOCUMENTS\n## ${label}\n\n---\n\n`;
+  Object.entries(developResults).forEach(([docId,r])=>{
+    const el=document.getElementById('doccontent_'+docId);
+    const text=el?el.innerText:r.content;
+    md+=`## ${r.icon} ${r.label}\n\n${text}\n\n---\n\n`;
+  });
+  return md;
+}
+
+function downloadMDDirectly(){
+  const content=buildMDContent();
+  if(!content){showToast('No documents to export yet');return;}
+  let filename=document.getElementById('cloudFilename').value.trim()||'book-docs.md';
+  if(!filename.endsWith('.md'))filename+='.md';
+  const blob=new Blob([content],{type:'text/markdown;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();
+  closeCloudModal();showToast('✓ Markdown file downloaded');
+}
+
+async function exportToGoogleDrive(){
+  const clientId=document.getElementById('googleClientId').value.trim();
+  if(!clientId){showToast('Enter your Google OAuth Client ID first');return;}
+  try{localStorage.setItem('bookgen_googleClientId',clientId);}catch(e){}
+  const content=buildMDContent();if(!content){showToast('No documents to export yet');return;}
+  let filename=document.getElementById('cloudFilename').value.trim()||'book-docs.md';
+  if(!filename.endsWith('.md'))filename+='.md';
+  const scope='https://www.googleapis.com/auth/drive.file';
+  const redirectUri=window.location.href.split('?')[0].split('#')[0];
+  const authUrl=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scope)}`;
+  const popup=window.open(authUrl,'googleAuth','width=500,height=600');
+  const check=setInterval(async()=>{
+    try{if(popup.closed){clearInterval(check);return;}const hash=popup.location.hash;if(hash&&hash.includes('access_token')){clearInterval(check);popup.close();const params=new URLSearchParams(hash.slice(1));await uploadToGoogleDrive(params.get('access_token'),filename,content);}}catch(e){}
+  },500);
+}
+async function uploadToGoogleDrive(token,filename,content){
+  showToast('⬆ Uploading to Google Drive…');
+  const form=new FormData();
+  form.append('metadata',new Blob([JSON.stringify({name:filename,mimeType:'text/markdown'})],{type:'application/json'}));
+  form.append('file',new Blob([content],{type:'text/markdown'}));
+  try{
+    const res=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',headers:{'Authorization':'Bearer '+token},body:form});
+    if(res.ok){const data=await res.json();closeCloudModal();showToast('✓ Saved to Google Drive: '+data.name);}
+    else{const err=await res.json().catch(()=>({}));showToast('Drive upload failed: '+(err.error?.message||res.statusText));}
+  }catch(e){showToast('Upload error: '+e.message);}
+}
+
+async function exportToOneDrive(){
+  const clientId=document.getElementById('msClientId').value.trim();
+  if(!clientId){showToast('Enter your Microsoft App Client ID first');return;}
+  try{localStorage.setItem('bookgen_msClientId',clientId);}catch(e){}
+  const content=buildMDContent();if(!content){showToast('No documents to export yet');return;}
+  let filename=document.getElementById('cloudFilename').value.trim()||'book-docs.md';
+  if(!filename.endsWith('.md'))filename+='.md';
+  const redirectUri=window.location.href.split('?')[0].split('#')[0];
+  const authUrl=`https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${encodeURIComponent(clientId)}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent('Files.ReadWrite')}`;
+  const popup=window.open(authUrl,'msAuth','width=500,height=600');
+  const check=setInterval(async()=>{
+    try{if(popup.closed){clearInterval(check);return;}const hash=popup.location.hash;if(hash&&hash.includes('access_token')){clearInterval(check);popup.close();const params=new URLSearchParams(hash.slice(1));await uploadToOneDrive(params.get('access_token'),filename,content);}}catch(e){}
+  },500);
+}
+async function uploadToOneDrive(token,filename,content){
+  showToast('⬆ Uploading to OneDrive…');
+  try{
+    const res=await fetch(`https://graph.microsoft.com/v1.0/me/drive/root:/${encodeURIComponent(filename)}:/content`,{method:'PUT',headers:{'Authorization':'Bearer '+token,'Content-Type':'text/markdown'},body:content});
+    if(res.ok){const data=await res.json();closeCloudModal();showToast('✓ Saved to OneDrive: '+data.name);}
+    else{const err=await res.json().catch(()=>({}));showToast('OneDrive upload failed: '+(err.error?.message||res.statusText));}
+  }catch(e){showToast('Upload error: '+e.message);}
+}
+
+// ══════════════════════════════════════════════════════════
+//  START
+// ══════════════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
